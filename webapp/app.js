@@ -67,25 +67,17 @@ const APPController = (function(APICtrl) {
         const display = document.getElementById("artistDisplay");
         const topArtists = await APICtrl.getTopArtists("short_term", 20);
         
-        console.log(topArtists[0]);
-        const child = document.createElement("div");
-        const image = new Image();
-        image.src = topArtists[0]["images"][2]["url"];
-        child.append(image);
 
-        display.appendChild(child);
-        //looping to create elements containing the artists image
-        /*
+
+        //looping to create elements containing the artists image        
         for(const artist of topArtists){
             const child = document.createElement("div");
-            const image = Image();
-            image.src = artist[""]
-
-
-
-            //display.appendChild(child);
+            const image = new Image();
+            image.src = artist['images'][2]['url'];
+            child.append(image);
+            display.appendChild(child);
         }
-*/
+
     }
 
     return {
