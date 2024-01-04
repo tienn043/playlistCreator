@@ -60,14 +60,32 @@ const UIController = (function(){
 */
 
 const APPController = (function(APICtrl) {
+    
+    //loads artist display on page load
     const loadArtists = async () => {
+        //creating display container and topArtists object
         const display = document.getElementById("artistDisplay");
         const topArtists = await APICtrl.getTopArtists("short_term", 20);
         
-        for(const artist of topArtists){
-            console.log(artist['name']);
-        }
+        console.log(topArtists[0]);
+        const child = document.createElement("div");
+        const image = new Image();
+        image.src = topArtists[0]["images"][2]["url"];
+        child.append(image);
 
+        display.appendChild(child);
+        //looping to create elements containing the artists image
+        /*
+        for(const artist of topArtists){
+            const child = document.createElement("div");
+            const image = Image();
+            image.src = artist[""]
+
+
+
+            //display.appendChild(child);
+        }
+*/
     }
 
     return {
