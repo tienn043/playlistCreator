@@ -52,12 +52,15 @@ const APIController = (function(){
     
 })();
 
-/*
+
 //UI Controller
 const UIController = (function(){
-
+    const DOMelements = {
+        unselectedArtist : '#unselectedArtist',
+        selectedArtist : '#selectedArtist'
+    }
 })();
-*/
+
 
 const APPController = (function(APICtrl) {
     
@@ -66,19 +69,25 @@ const APPController = (function(APICtrl) {
         //creating display container and topArtists object
         const display = document.getElementById("artistDisplay");
         const topArtists = await APICtrl.getTopArtists("short_term", 20);
-        
-
 
         //looping to create elements containing the artists image        
         for(const artist of topArtists){
             const child = document.createElement("div");
+            child.id = artist['id'];
+            child.classList.add('unselectedArtist');
+            
             const image = new Image();
             image.src = artist['images'][2]['url'];
             child.append(image);
+
             display.appendChild(child);
         }
-
     }
+
+
+
+
+
 
     return {
         init() {
