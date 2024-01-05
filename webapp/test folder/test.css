@@ -1,7 +1,9 @@
+
+
 /*image container*/
 .artistIcon{
-    width: 120px; /* Set the width of the div */
-    height: 120px; /* Set the height of the div */
+    width: 160px; /* Set the width of the div */
+    height: 160px; /* Set the height of the div */
     overflow: hidden; /* Hide overflowing content */
     position: relative; /* Establish positioning context for absolute positioning of the image */
 }
@@ -14,6 +16,6 @@
     left: 0; 
 }
 
-.selectedIcon{
-    border: 5px solid #919191;
+.testStyle{
+    border: 5px solid #589077;
 }

@@ -55,21 +55,23 @@ const APIController = (function(){
 //UI Controller
 const UIController = (function(){
     const DOMelements = {
-        artistIcon : '.artistIcon',
-        selectedArtist : '.selectedArtist'
+        submitArtists : '#submitArtists'
+        artistDisplay : '#artistDisplay'
     }
 
     return {
         inputs(){
             return{
-                //artistIcon : document.querySelectorAll(DOMelements.artistIcon),
-                //selectedArtist : document.querySelector(DOMelements.selectedArtist)
+                artistDisplay : document.getElementById('artistDisplay')
             }
         },
 
-        toggleSelection(event){
-            const artist = event.target.closest('artistIcon');
-            artist.classList.toggle('selectedArtist');
+        toggleSelection(e){
+            if(e.target !== e.currentTarget){
+                const parent = e.target.parentNode;
+                parent.classList.toggle('selectedIcon');
+            }
+            e.stopPropagation();
         }
         
     }
@@ -83,7 +85,7 @@ const APPController = (function(APICtrl, UICtrl) {
     //loads artist display on page load
 
 
-    const displayArtists = async () => {
+    const loadArtists = async () => {
         //creating display container and topArtists object
         const display = document.getElementById("artistDisplay");
         const topArtists = await APICtrl.getTopArtists("short_term", 20);
@@ -102,33 +104,15 @@ const APPController = (function(APICtrl, UICtrl) {
             display.appendChild(child);
         }
 
-        return document.querySelectorAll('.artistIcon')
+
     }
 
-    const loadArtists = async () => {
 
-        imagesArray = await displayArtists();
-        console.log(imagesArray.length);
-
-        imagesArray.forEach(function(image) {
-            console.log("this is working");
-            image.addEventListener('click', async (e) => {
-                e.preventDefault();
-                UICtrl.toggleSelection(e);
-            });            
-        });
-  /*
-        const imagesArray = DOMInputs.artistIcon;
-        console.log(imagesArray.length);
-
-*/
-    }
-/*
-    DOMInputs.artistIcon.addEventListener('click', async (e) => {
+    DOMInputs.artistDisplay.addEventListener('click', async (e) => {
         e.preventDefault();
         UICtrl.toggleSelection(e);
     });
-*/
+
 
 
 
