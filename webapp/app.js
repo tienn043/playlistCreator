@@ -49,42 +49,86 @@ const APIController = (function(){
             return _getRecommendations(limit, artistIDs, popularity);
         }
     }
-    
 })();
 
 
 //UI Controller
 const UIController = (function(){
     const DOMelements = {
-        unselectedArtist : '#unselectedArtist',
-        selectedArtist : '#selectedArtist'
+        artistIcon : '.artistIcon',
+        selectedArtist : '.selectedArtist'
     }
+
+    return {
+        inputs(){
+            return{
+                //artistIcon : document.querySelectorAll(DOMelements.artistIcon),
+                //selectedArtist : document.querySelector(DOMelements.selectedArtist)
+            }
+        },
+
+        toggleSelection(event){
+            const artist = event.target.closest('artistIcon');
+            artist.classList.toggle('selectedArtist');
+        }
+        
+    }
+    
 })();
 
 
-const APPController = (function(APICtrl) {
+const APPController = (function(APICtrl, UICtrl) {
     
+    DOMInputs = UICtrl.inputs();
     //loads artist display on page load
-    const loadArtists = async () => {
+
+
+    const displayArtists = async () => {
         //creating display container and topArtists object
         const display = document.getElementById("artistDisplay");
         const topArtists = await APICtrl.getTopArtists("short_term", 20);
 
         //looping to create elements containing the artists image        
         for(const artist of topArtists){
-            const child = document.createElement("div");
+            const child = document.createElement('div');
             child.id = artist['id'];
-            child.classList.add('unselectedArtist');
+            child.classList.add('artistIcon');
             
             const image = new Image();
             image.src = artist['images'][2]['url'];
+
             child.append(image);
 
             display.appendChild(child);
         }
+
+        return document.querySelectorAll('.artistIcon')
     }
 
+    const loadArtists = async () => {
 
+        imagesArray = await displayArtists();
+        console.log(imagesArray.length);
+
+        imagesArray.forEach(function(image) {
+            console.log("this is working");
+            image.addEventListener('click', async (e) => {
+                e.preventDefault();
+                UICtrl.toggleSelection(e);
+            });            
+        });
+  /*
+        const imagesArray = DOMInputs.artistIcon;
+        console.log(imagesArray.length);
+
+*/
+    }
+/*
+    DOMInputs.artistIcon.addEventListener('click', async (e) => {
+        e.preventDefault();
+        UICtrl.toggleSelection(e);
+    });
+*/
 
 
 
@@ -95,6 +139,6 @@ const APPController = (function(APICtrl) {
             loadArtists();
         }
     }
-})(APIController);
+})(APIController, UIController);
 
 APPController.init();

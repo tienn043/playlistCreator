@@ -20,33 +20,7 @@ localStorage.clear();
 localStorage.setItem("accessToken", authObj().access_token);
 localStorage.setItem("expiresIn", authObj().axpires_in);
 localStorage.setItem("token_type", authObj().token_type);
-/*
-function isTokenExpired(accessToken) {
-    if (!accessToken) {
-        return true; // If no token is provided, consider it expired
-    }
 
-    try {
-        const tokenData = JSON.parse(atob(accessToken.split('.')[1])); // Decode the token payload
-        const expirationTime = tokenData.exp * 1000; // Convert expiration time to milliseconds
-
-        // Compare with the current time
-        return expirationTime < Date.now();
-    } catch (error) {
-        console.error('Error decoding or parsing the access token:', error.message);
-        return true; // Consider the token expired in case of an error
-    }
-}
-
-// Example usage
-const accessToken = localStorage.getItem("accessToken");
-if (isTokenExpired(accessToken)) {
-    console.log('Access token is expired.');
-} else {
-    console.log('Access token is still valid.');
-}
-
-*/
 
 
 
