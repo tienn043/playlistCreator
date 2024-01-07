@@ -8,6 +8,12 @@
         
     </head>
     <body>
+        <script>
+            const tokenInfoString = window.location.hash.substring(1);
+            if(!tokenInfoString){
+                window.history.back();
+            }
+        </script>
         <!--Top artists selection display-->
         <div id = "artistSelection">
             <h1>Select 5 artists or less</h1>

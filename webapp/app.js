@@ -27,7 +27,8 @@ const APIController = (function(){
 
     //getting recommendations based off artists given under a max popularity
     const _getRecommendations = async (limit, artistIDs, popularity) => {
-        const recommendationsList = await fetch (`https://api.spotify.com/v1/recommendations?limit=${limit}seed_artists=${artistIDs}&max_popularity=${popularity}`, {
+        console.log("fuck");
+        const recommendationsList = await fetch (`https://api.spotify.com/v1/recommendations?limit=${limit}&seed_artists=${artistIDs}&max_popularity=${popularity}`, {
             method: 'GET',
             headers: {'Authorization' :  `Bearer ${accessToken}`}
         });
@@ -36,6 +37,7 @@ const APIController = (function(){
         return data.tracks;
     };
 
+    //gets album tracks given album id
     const _getAlbumTracks = async (albumID, limit) => {
         const tracksList = await fetch (`https://api.spotify.com/v1/albums/${albumID}/tracks?&limit=${limit}`, {
             method: 'GET',
@@ -46,7 +48,41 @@ const APIController = (function(){
         return data.items;
     };
 
+    const _getUserProfile = async () =>{
+        const userData = await fetch (`https://api.spotify.com/v1/me`, {
+            method: 'GET',
+            headers: {'Authorization' : `Bearer ${accessToken}`}
+        });
+
+        const data = await userData.json();
+        return data;
+    };
+
+    const _createPlaylist = async (userID) => {
+        const requestBody = JSON.stringify({
+            "name": "New Playlist",
+            "description": "A blend of your favorite artists' songs and recommendations",
+            "public": false
+        });
+
+        const playlistData = await fetch (`https://api.spotify.com/v1/users/${userID}/playlists`, {
+            method: 'POST',
+            headers: {Accept : 'application/json',
+                'Authorization' : `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'},
+            body: requestBody
+        });
+        const data = await playlistData.json();
+        return data;
+    };
+
+
+
     return{
+        getAccessToken(){
+            return accessToken;
+        },
+
         getTopArtists(timePeriod, limit){
             return _getTopArtists(timePeriod, limit);
         },
@@ -61,7 +97,16 @@ const APIController = (function(){
 
         getAlbumTracks(albumID, limit){
             return _getAlbumTracks(albumID, limit);
+        },
+
+        getUserProfile(){
+            return _getUserProfile();
+        },
+
+        createPlaylist(){
+            return _createPlaylist();
         }
+
     }
 })();
 
@@ -117,13 +162,13 @@ const UIController = (function(){
     
 })();
 
-
+//app controller
 const APPController = (function(APICtrl, UICtrl) {
-    
     DOMInputs = UICtrl.inputs();
+    let playlistNum = 60;
+
+
     //loads artist display on page load
-
-
     const loadArtists = async () => {
         //creating display container and topArtists object
         const display = DOMInputs.artistDisplay;
@@ -134,6 +179,9 @@ const APPController = (function(APICtrl, UICtrl) {
         for(const artist of topArtists){
             const child = document.createElement('div');
             child.id = artist['id'];
+            let name = artist['name'];
+            
+            child.classList.add(name.replaceAll(" ", "_"));
             child.classList.add('artistIcon');
             
             const image = new Image();
@@ -160,7 +208,6 @@ const APPController = (function(APICtrl, UICtrl) {
 
         //handling album list
         for(const album of regAlbums){
-
             const albumTracks = await APIController.getAlbumTracks(album['id'], 40);
             let tempArray = [];
             for(const track of albumTracks){
@@ -171,13 +218,20 @@ const APPController = (function(APICtrl, UICtrl) {
         };
 
         //handling singles list
+        //selectedAlbumNum minimizes number of API calls to Spotify
         let tempArray = [];
-        for(const album of singleAlbums){
-            const albumTracks = await APIController.getAlbumTracks(album['id'], 20);
+        const selectedAlbumsNum = Math.floor(singleAlbums.length/3);
+        
+        for(let i = 0; i < selectedAlbumsNum; i++){
+            let randomNumber = Math.floor(Math.random() * (singleAlbums.length));
+            const albumTracks = await APIController.getAlbumTracks(singleAlbums[randomNumber]['id'], 20);
+            
             for(const track of albumTracks){
                 tempArray.push(track['id']);
             }
+            singleAlbums.splice(randomNumber, 1);
         }
+
         catalog.push(tempArray);
         catalogSize += tempArray.length;
 
@@ -185,6 +239,7 @@ const APPController = (function(APICtrl, UICtrl) {
         return [catalog, catalogSize];
     }
 
+    //selecting random tracks helper function
     const getRandomSongs = async (catalog, limit, catalogSize) => {
         let randomTracks = [];
 
@@ -201,13 +256,12 @@ const APPController = (function(APICtrl, UICtrl) {
                 let randomAlbumIndex = Math.floor(Math.random() * catalog.length);
                 let randomTrackIndex = Math.floor(Math.random() * catalog[randomAlbumIndex].length);
                 
-                if(catalog[randomAlbumIndex].length == 0)
-                    catalog.splice(randomAlbumIndex, 1);
-                
                 //adds selected track to be returned
                 //removed from catalog
                 randomTracks.push(catalog[randomAlbumIndex][randomTrackIndex]);
                 catalog[randomAlbumIndex].splice(randomTrackIndex, 1);
+                if(catalog[randomAlbumIndex].length == 0)
+                catalog.splice(randomAlbumIndex, 1);
             }
         }
         return randomTracks;
@@ -221,16 +275,32 @@ const APPController = (function(APICtrl, UICtrl) {
 
     //submit button event listener 
     DOMInputs.submitArtists.addEventListener('click', async (e) => {
+        /*
         let playlistTracks = [];
-
         const idList = UICtrl.submit(e);
+        const idListString = idList.join('%2C');
+
+        const recommendationSize = Math.floor(playlistNum*(2/3));
+        const remainder = playlistNum - recommendationSize;
+
+        let recommendationsArr = await APICtrl.getRecommendations(recommendationSize, idListString, 90);
+
+        //adds songs from top artists
         for(const id of idList) {
             const [catalog, size] = await getEntireCatalog(id);
-            let randomSongs = await getRandomSongs(catalog, 5, size);
+            let randomSongs = await getRandomSongs(catalog, Math.ceil(remainder/idList.length), size);
+
             playlistTracks = playlistTracks.concat(randomSongs);
         }
-        console.log(playlistTracks);
 
+        //adding recommendation tracks
+        for(const recommendation of recommendationsArr){
+            playlistTracks = playlistTracks.concat(recommendation['id']);
+        }
+*/
+        const userID = await APICtrl.getUserProfile();
+        const playlistData = await APICtrl.createPlaylist(userID['id']);
+        console.log(playlistData);
     });
 
 
@@ -238,8 +308,12 @@ const APPController = (function(APICtrl, UICtrl) {
 
     return {
         init() {
-            console.log('App is starting');
-            loadArtists();
+            if(!APICtrl.getAccessToken()){
+                window.location.replace("http://127.0.0.1:5500/webapp/index.html");
+            }else{
+                console.log('App is starting');
+                loadArtists();
+            }
         }
     }
 })(APIController, UIController);
