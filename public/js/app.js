@@ -1,24 +1,50 @@
-console.log(sessionStorage.getItem("accessToken"));
-console.log("test");
-
 //API Controller
 const APIController = (function(){
-    const accessToken = sessionStorage.getItem('accessToken');
-    
+    //function for receiving an access token
+    const _getAccessToken = async () =>{
+        const urlParams = new URLSearchParams(window.location.search);
+        let code = urlParams.get('code');
+        const url = 'https://accounts.spotify.com/api/token';
+        const clientId = '350bb843292c48ae8ecece947c2ed01d';
+        const redirectUri = 'http://localhost:3000/playlist-creator.html';
+
+
+        let codeVerifier = window.sessionStorage.getItem('code_verifier');
+  
+        const payload = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            client_id: clientId,
+            grant_type: 'authorization_code',
+            code: code,
+            redirect_uri: redirectUri,
+            code_verifier: codeVerifier,
+          }),
+        }
+      
+        const body = await fetch(url, payload);
+        const response = await body.json();
+        console.log(response);
+        return response.access_token;
+    };
+
     //gets top artists object
-    const _getTopArtists = async (timePeriod, limit) => {
+    const _getTopArtists = async (accessToken, timePeriod, limit) => {
         const result = await fetch(`https://api.spotify.com/v1/me/top/artists?time_range=${timePeriod}&limit=${limit}&offset=0`, {
             method: 'GET',
             headers: { 'Authorization' : `Bearer ${accessToken}`}
         });
-        console.log(accessToken);
+        
         const data = await result.json();
         console.log(data);
         return data.items;
     };
 
     //gets an artists album object
-    const _getArtistAlbums = async (artistID, albumTypes, limit) => {
+    const _getArtistAlbums = async (accessToken, artistID, albumTypes, limit) => {
         const albumList = await fetch  (`https://api.spotify.com/v1/artists/${artistID}/albums?include_groups=${albumTypes}&limit=${limit}&offset=0`, {
             method: 'GET',
             headers: {'Authorization' :  `Bearer ${accessToken}`}
@@ -29,7 +55,7 @@ const APIController = (function(){
     };
 
     //getting recommendations based off artists given under a max popularity
-    const _getRecommendations = async (limit, artistIDs, popularity) => {
+    const _getRecommendations = async (accessToken, limit, artistIDs, popularity) => {
 
         const recommendationsList = await fetch (`https://api.spotify.com/v1/recommendations?limit=${limit}&seed_artists=${artistIDs}&max_popularity=${popularity}`, {
             method: 'GET',
@@ -41,7 +67,7 @@ const APIController = (function(){
     };
 
     //gets album tracks given album id
-    const _getAlbumTracks = async (albumID, limit) => {
+    const _getAlbumTracks = async (accessToken, albumID, limit) => {
         const tracksList = await fetch (`https://api.spotify.com/v1/albums/${albumID}/tracks?&limit=${limit}`, {
             method: 'GET',
             headers: {'Authorization' :  `Bearer ${accessToken}`}
@@ -51,7 +77,8 @@ const APIController = (function(){
         return data.items;
     };
 
-    const _getUserProfile = async () =>{
+    //gets user profile info
+    const _getUserProfile = async (accessToken) =>{
         const userData = await fetch (`https://api.spotify.com/v1/me`, {
             method: 'GET',
             headers: {'Authorization' : `Bearer ${accessToken}`}
@@ -60,15 +87,16 @@ const APIController = (function(){
         const data = await userData.json();
         return data;
     };
-
-    const _createPlaylist = async (userID) => {
+    
+    //creates playlist
+    const _createPlaylist = async (accessToken) => {
         const requestBody = JSON.stringify({
             "name": "New Playlist",
             "description": "A blend of your favorite artists' songs and recommendations",
             "public": false
         });
 
-        const playlistData = await fetch (`https://api.spotify.com/v1/users/${userID}/playlists`, {
+        const playlistData = await fetch (`https://api.spotify.com/v1/me/playlists`, {
             method: 'POST',
             headers: {Accept : 'application/json',
                 'Authorization' : `Bearer ${accessToken}`,
@@ -77,56 +105,84 @@ const APIController = (function(){
         });
         const data = await playlistData.json();
 
-        console.log("HI IM RIGHT HERE");
         return data;
     };
 
+    const _addTracks = async (accessToken, tracks, playlistID) => {
+        const requestBody = JSON.stringify({
+            "uris": tracks,
+            "position" : 0
+        });
+
+        const response = await fetch (`https://api.spotify.com/v1/playlists/${playlistID}/tracks`,{
+            method: 'POST',
+            headers: {Accept : 'application/json',
+                'Authorization' : `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'},
+                body: requestBody
+        });
+
+        const data = await response.json();
+        return data;
+    };
+    
 
 
     return{
         getAccessToken(){
-            return accessToken;
+            return _getAccessToken();
         },
 
-        getTopArtists(timePeriod, limit){
-            return _getTopArtists(timePeriod, limit);
+        getTopArtists(accessToken, timePeriod, limit){
+            return _getTopArtists(accessToken, timePeriod, limit);
         },
 
-        getArtistAlbums(artistID, albumTypes, limit){
-            return _getArtistAlbums(artistID, albumTypes, limit);
+        getArtistAlbums(accessToken, artistID, albumTypes, limit){
+            return _getArtistAlbums(accessToken, artistID, albumTypes, limit);
         },
 
-        getRecommendations(limit, artistIDs, popularity){
-            return _getRecommendations(limit, artistIDs, popularity);
+        getRecommendations(accessToken, limit, artistIDs, popularity){
+            return _getRecommendations(accessToken, limit, artistIDs, popularity);
         },
 
-        getAlbumTracks(albumID, limit){
-            return _getAlbumTracks(albumID, limit);
+        getAlbumTracks(accessToken, albumID, limit){
+            return _getAlbumTracks(accessToken, albumID, limit);
         },
 
-        getUserProfile(){
-            return _getUserProfile();
+        getUserProfile(accessToken){
+            return _getUserProfile(accessToken);
         },
 
-        createPlaylist(){
-            return _createPlaylist();
+        createPlaylist(accessToken){
+            return _createPlaylist(accessToken);
+        },
+
+        addTracks(accessToken, tracks, playlistID){
+            return _addTracks(accessToken, tracks, playlistID);
         }
-
     }
 })();
 
 
 //UI Controller
 const UIController = (function(){
-    const DOMelements = {
+    const DOMelements = {  
+        submitArtists : '#submitArtists',
+        artistDisplay : '.artistDisplay'
+    /*
         submitArtists : '#submitArtists',
         artistDisplay : '#artistDisplay'
+    */
     }
 
     return {
         inputs(){
             return{
-                artistDisplay : document.getElementById('artistDisplay'),
+                /**
+                 * artistDisplay : document.getElementById('artistDisplay'),
+                submitArtists : document.getElementById('submitArtists')
+                 */
+                artistDisplay : document.querySelector(DOMelements.artistDisplay),
                 submitArtists : document.getElementById('submitArtists')
             }
         },
@@ -176,8 +232,11 @@ const APPController = (function(APICtrl, UICtrl) {
     //loads artist display on page load
     const loadArtists = async () => {
         //creating display container and topArtists object
+        const accessToken = await APICtrl.getAccessToken();
+        localStorage.clear();
+        localStorage.setItem("accessToken", accessToken);
         const display = DOMInputs.artistDisplay;
-        const topArtists = await APICtrl.getTopArtists("short_term", 20);
+        const topArtists = await APICtrl.getTopArtists(accessToken, "short_term", 20);
 
         
         //looping to create elements containing the artists image        
@@ -203,9 +262,10 @@ const APPController = (function(APICtrl, UICtrl) {
     //returns an artists entire catalog
     //this includes LPs, EPs, and singles
     const getEntireCatalog = async(artistID) => {
+        const accessToken = localStorage.getItem("accessToken");
         //gathers artists albums and singles
-        const regAlbums = await APIController.getArtistAlbums(artistID, 'album', 20);
-        const singleAlbums = await APIController.getArtistAlbums(artistID, 'single', 20);
+        const regAlbums = await APIController.getArtistAlbums(accessToken, artistID, 'album', 20);
+        const singleAlbums = await APIController.getArtistAlbums(accessToken, artistID, 'single', 20);
 
         //array holding album and singles in arrays
         let catalog = [];
@@ -213,7 +273,7 @@ const APPController = (function(APICtrl, UICtrl) {
 
         //handling album list
         for(const album of regAlbums){
-            const albumTracks = await APIController.getAlbumTracks(album['id'], 40);
+            const albumTracks = await APIController.getAlbumTracks(accessToken, album['id'], 40);
             let tempArray = [];
             for(const track of albumTracks){
                 tempArray.push(track['id']);
@@ -229,7 +289,7 @@ const APPController = (function(APICtrl, UICtrl) {
         
         for(let i = 0; i < selectedAlbumsNum; i++){
             let randomNumber = Math.floor(Math.random() * (singleAlbums.length));
-            const albumTracks = await APIController.getAlbumTracks(singleAlbums[randomNumber]['id'], 20);
+            const albumTracks = await APIController.getAlbumTracks(accessToken, singleAlbums[randomNumber]['id'], 20);
             
             for(const track of albumTracks){
                 tempArray.push(track['id']);
@@ -280,7 +340,8 @@ const APPController = (function(APICtrl, UICtrl) {
 
     //submit button event listener 
     DOMInputs.submitArtists.addEventListener('click', async (e) => {
-      
+        const accessToken = localStorage.getItem("accessToken");
+
         let playlistTracks = [];
         const idList = UICtrl.submit(e);
         const idListString = idList.join('%2C');
@@ -288,12 +349,12 @@ const APPController = (function(APICtrl, UICtrl) {
         const recommendationSize = Math.floor(playlistNum*(2/3));
         const remainder = playlistNum - recommendationSize;
 
-        let recommendationsArr = await APICtrl.getRecommendations(recommendationSize, idListString, 90);
+        let recommendationsArr = await APICtrl.getRecommendations(accessToken, recommendationSize, idListString, 90);
 
         //adds songs from top artists
         for(const id of idList) {
             const [catalog, size] = await getEntireCatalog(id);
-            let randomSongs = await getRandomSongs(catalog, Math.ceil(remainder/idList.length), size);
+            let randomSongs = await getRandomSongs(accessToken, catalog, Math.ceil(remainder/idList.length), size);
 
             playlistTracks = playlistTracks.concat(randomSongs);
         }
@@ -303,20 +364,24 @@ const APPController = (function(APICtrl, UICtrl) {
             playlistTracks = playlistTracks.concat(recommendation['id']);
         }
 
-        const userID = await APICtrl.getUserProfile();
-        const playlistData = await APICtrl.createPlaylist(userID['id']);
-        console.log(playlistData);
+        const user = await APICtrl.getUserProfile();
+        const userID = user['id'];
+        console.log(userID);
+
+        const playlistData = await APICtrl.createPlaylist(accessToken);
+        const playlistID = playlistData['id'];
+        const uris = playlistTracks.map(str => "spotify:track:" + str);
+
+        const generatedPlaylist = await APICtrl.addTracks(accessToken, uris, playlistID);
+        console.log(generatedPlaylist);
     });
 
 
 
     return {
         init() {
-
             console.log('App is starting');
-            loadArtists();
-
-            
+            loadArtists();            
         }
     }
 })(APIController, UIController);

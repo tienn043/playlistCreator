@@ -16,11 +16,12 @@ app.use('/js', express.static(path.join(__dirname, 'public/js')));
 //app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-  readFile('./index.html', 'utf8', (err,html) => {
+  readFile('./indexCopy.html', 'utf8', (err,html) => {
       if(err){
           res.status(500).send('ERROR');
       }
       res.send(html);
+
     })
   }
 
@@ -29,41 +30,10 @@ app.get('/', (req, res) => {
 
 
 
-//spotify tutorial to use auth flow
-const generateRandomString = (length) => {
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const values = crypto.getRandomValues(new Uint8Array(length));
-  return values.reduce((acc, x) => acc + possible[x % possible.length], "");
-}
-
-const codeVerifier  = generateRandomString(64);
-
-const sha256 = async (plain) => {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(plain)
-  return window.crypto.subtle.digest('SHA-256', data)
-}
-
-const base64encode = (input) => {
-  return btoa(String.fromCharCode(...new Uint8Array(input)))
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_');
-}
-
-const hashed = await sha256(codeVerifier)
-const codeChallenge = base64encode(hashed);
-
-
-
-var client_id = '350bb843292c48ae8ecece947c2ed01d';
-var redirect_uri = 'http://localhost:3000/playlist-creator';
-//var client_secret = 'deaef9ed8b554c8abd8b99df67252dad';
-
-
+/*
 app.get('/login', function(req, res) {
 
-  //var state = generateRandomString(16);
+  var state = generateRandomString(16);
   var scope = 'user-top-read, user-read-private, user-read-email, playlist-read-private, playlist-modify-private';
 
   res.redirect('https://accounts.spotify.com/authorize?' +
@@ -124,7 +94,7 @@ app.get('/playlist-creator', function(req, res) {
     });
   }
 });
-
+*/
 app.get('/playlist-creator.html', (req, res) => {
   readFile('./playlist-creator.html', 'utf8', (err,html) => {
       if(err){
@@ -135,7 +105,7 @@ app.get('/playlist-creator.html', (req, res) => {
   }
 
 );
-
+/*
 app.get('/test.html', (req, res) => {
   readFile('./test.html', 'utf8', (err,html) => {
       if(err){
@@ -146,6 +116,7 @@ app.get('/test.html', (req, res) => {
   }
 
 );
+*/
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}/`);

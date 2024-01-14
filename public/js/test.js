@@ -1,28 +1,50 @@
-//http://localhost:5500/webapp/playlist-creator.html#access_token=BQC3MRSmqGGh7F2J0l7WrkyC-GLZYlo2PllpZTn-q1uWKMpl2vODg36GlPU21OdrFcFXYH5kpFmMxMpJBTc_2x7twEk_F819u4aSrHMnvwjSkqduAylAmvLTLM_3XqignPtU7ab8H9OtAWvDJHpKa_065LOE09fHmUK4miTFDdL5lALyX0FRSbw2viSqPeEcQcl2y9GTq62HOk4hnd5cu0lc_2UbZNyc&token_type=Bearer&expires_in=3600
-console.log("HI");
-/*
-//creates authorization object
-const authObj = () => {
-    const tokenInfoString = window.location.hash.substring(1);
-    const separatedParams = tokenInfoString.split("&");   
-    
-    const paramsList = separatedParams.reduce((accumulator, currentValue) => {
-        const [key, value] = currentValue.split("=");
-        accumulator[key] = value;
-        return accumulator;
-    }, {});
+const clientId = '350bb843292c48ae8ecece947c2ed01d';
+const redirectUri = 'http://localhost:3000/playlist-creator.html';
 
-    return paramsList;
+const handleLogin = async () => {
+    const generateRandomString = (length) => {
+        const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const values = crypto.getRandomValues(new Uint8Array(length));
+        return values.reduce((acc, x) => acc + possible[x % possible.length], "");
+      }
+      
+    const codeVerifier  = generateRandomString(64);
+
+    const sha256 = async (plain) => {
+        const encoder = new TextEncoder()
+        const data = encoder.encode(plain)
+        return window.crypto.subtle.digest('SHA-256', data)
+    }
+
+    const base64encode = (input) => {
+    return btoa(String.fromCharCode(...new Uint8Array(input)))
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+    }
+
+    const hashed = await sha256(codeVerifier);
+    const codeChallenge = base64encode(hashed);
+
+
+    const scope = 'user-top-read user-read-private user-read-email playlist-read-private playlist-modify-private';
+    const authUrl = new URL("https://accounts.spotify.com/authorize")
+
+    // generated in the previous step
+    window.sessionStorage.setItem('code_verifier', codeVerifier);
+
+    const params =  {
+        response_type: 'code',
+        client_id: clientId,
+        scope,
+        code_challenge_method: 'S256',
+        code_challenge: codeChallenge,
+        redirect_uri: redirectUri,
+    }
+
+    authUrl.search = new URLSearchParams(params).toString();
+    window.location.href = authUrl.toString();
+
 };
-console.log("HI");
-console.log(authObj());
-//const{access_token, expires_in, token_type} = authObj();
-//adding authorization items to local storage
-localStorage.clear();
-localStorage.setItem("accessToken", authObj().access_token);
-localStorage.setItem("client", authObj().axpires_in);
 
-
-
-*/
 

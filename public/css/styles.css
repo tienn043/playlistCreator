@@ -1,3 +1,64 @@
+html {
+    background-color: rgb(152, 177, 103)
+}
+/*
+* {
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+*/
+button{
+    background-color: rgb(13, 75, 13);
+    color: antiquewhite;
+    text-align: center;
+    border: none;
+    padding: 1rem 2rem;
+    display: inline-block;
+    font-size: 1rem;
+    font-family: 'Inter';
+    border-radius: .5rem;
+    transition-duration: 0.4s;
+}
+
+button:hover {
+    background-color: rgb(61, 106, 61);
+
+}
+
+button:active:hover {
+    background-color: rgb(9, 58, 9);
+}
+
+
+.loginPrompt{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    
+}
+
+.appTitle{
+    font-family: 'DM Serif Text', serif;
+    color:rgb(45, 45, 45);
+    font-size: 4rem;
+    font-style: italic;
+}
+
+p{
+    font-family: 'Inter',serif;
+}
+
+
+
 /*image container*/
 .artistIcon{
     width: 120px; /* Set the width of the div */

@@ -1,17 +1,37 @@
-//http://localhost:5500/webapp/playlist-creator.html#access_token=BQC3MRSmqGGh7F2J0l7WrkyC-GLZYlo2PllpZTn-q1uWKMpl2vODg36GlPU21OdrFcFXYH5kpFmMxMpJBTc_2x7twEk_F819u4aSrHMnvwjSkqduAylAmvLTLM_3XqignPtU7ab8H9OtAWvDJHpKa_065LOE09fHmUK4miTFDdL5lALyX0FRSbw2viSqPeEcQcl2y9GTq62HOk4hnd5cu0lc_2UbZNyc&token_type=Bearer&expires_in=3600
+const urlParams = new URLSearchParams(window.location.search);
+let code = urlParams.get('code');
+const url = 'https://accounts.spotify.com/api/token';
+const clientId = '350bb843292c48ae8ecece947c2ed01d';
+const redirectUri = 'http://localhost:3000/playlist-creator.html';
 
 
-//creates authorization object
+const getToken = async code => {
+    // stored in the previous step
+    let codeVerifier = window.sessionStorage.getItem('code_verifier');
+  
+    const payload = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: clientId,
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: redirectUri,
+        code_verifier: codeVerifier,
+      }),
+    }
+  
+    const body = await fetch(url, payload);
+    const response = await body.json();
+    console.log(response);
 
+    localStorage.setItem('accessToken', response.access_token);
 
+}
 
-//const{access_token, expires_in, token_type} = authObj();
-//adding authorization items to local storage
-localStorage.clear();
-localStorage.setItem("accessToken", authObj().access_token);
-localStorage.setItem("client", authObj().axpires_in);
-
-
-
-
+if(code){
+  getToken(code);
+}
 
