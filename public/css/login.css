@@ -1,0 +1,20 @@
+.loginPrompt{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    
+}
+
+
+.appTitle{
+    font-family: 'AKIRA';
+    color:rgb(45, 45, 45);
+    font-size: 4rem;
+    margin-bottom: 0;
+    margin-top: 15%;
+}
+
+
+

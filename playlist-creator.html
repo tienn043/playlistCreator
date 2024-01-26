@@ -4,19 +4,31 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Create a Playlist</title>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Inter:wght@300&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@900&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="css/styles.css">
-        
+        <link rel="stylesheet" type="text/css" href="css/playlist.css">
     </head>
     <body>
         <!--Top artists selection display-->
         <div class = "artistSelection">
-            <h1 class = "prompt">Select 5 artists or less</h1>
-            <div class = "artistDisplay"></div>
+            <h1 class = "prompt">PLAYLISTIFY</h1>
+            <h1 class = "options">SELECT UP TO 5 ARTISTS</h1>
+            <div class = "termContainer"> 
+                <button class = "short_term" disabled>1M</button>
+                <button class = "medium_term">6M</button>
+                <button class = "long_term">ALL-TIME</button>
+            </div>
             
-            <button id="submitArtists" disabled>Submit Artists</button>
+            <div class = "artistDisplay" tabindex="0"></div>
+            
+            <div class = "submitContainer">
+                <button class = "deselect" disabled>Deselect</button>
+                <button class="submit" disabled>Submit Artists</button>
+            </div>
+            
         </div>
 
-        <!--<script src = "/js/token.js"></script>-->
         <script src = "/js/app.js"></script>
     </body>
 </html>

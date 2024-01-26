@@ -3,25 +3,118 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Create a Playlist</title>
-        <link rel="stylesheet" type="text/css" href="css/styles.css">
         
+        <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Inter:wght@300&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@900&display=swap" rel="stylesheet">
+        <title>Create a Playlist</title>
     </head>
     <body>
+        <style>
+            html {
+                background-color: rgb(152, 177, 103)
+            }
+
+            button{
+                background-color: rgb(13, 75, 13);
+                color: antiquewhite;
+                text-align: center;
+                border: none;
+                padding: 1rem 2rem;
+                display: inline-block;
+                font-size: 1rem;
+                font-family: 'Inter';
+                border-radius: .5rem;
+                transition-duration: 0.4s;
+            }
+            
+            button:hover {
+                background-color: rgb(61, 106, 61);
+            
+            }
+            
+            button:active:hover {
+                background-color: rgb(9, 58, 9);
+            }
+                        
+            body{
+                background-color: rgb(152, 177, 103)
+            }
+            
+            
+            .selectedIcon{
+                background-color: blueviolet;
+                opacity: 70%;
+            }
+            
+            
+            .prompt{
+                font-family: 'Archivo', sans-serif;
+            /*
+                font-family: 'DM Serif Text', serif;
+            */
+                color:rgb(28, 28, 28);
+                font-size: 3rem;
+            }
+            
+            /*image container*/
+            .artistIcon{
+                width: 7.5rem; /* Set the width of the div */
+                height: 7.5rem; /* Set the height of the div */
+                overflow: hidden; /* Hide overflowing content */
+                position: relative; 
+            }
+            
+            .artistIcon img{
+                width: 100%; /* Make the image fill the entire width of the div */
+                height: auto; /* Maintain the aspect ratio of the image */
+                position: absolute; /* Position the image absolutely within the div */
+                top: 0; /* Align the top of the image with the top of the div */
+                left: 0; 
+            }
+            
+            .artistIcon:hover{
+                width: 7.6rem;
+                height: 7.6rem;
+            }
+            
+            
+            .artistDisplay{
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-content: center;
+                gap: 10px;
+            }
+            
+            /*container*/
+            .artistSelection{
+                width: 50%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            
+                        
+        </style>
         <!--Top artists selection display-->
-        <body>
-            <!--Top artists selection display-->
-            <div id="artistSelection">
-                <h1>Select 5 artists or less</h1>
-                <div id="artistDisplay"><div id="06HL4z0CvFAxyc27GXpf02" class="Taylor_Swift artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178859e4c14fa59296c8649e0e4"></div><div id="3DGlTwdM5Dim9XQipb3jMf" class="Jordan_Ward artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178886e735695eb17a0e29e0a50"></div><div id="332mFY6yBda91AsIOSKirG" class="Planet_Giza artistIcon"><img src="https://i.scdn.co/image/ab6761610000f1789e79f130a958dd2cdf32cebd"></div><div id="7tYKF4w9nC0nq9CsPZTHyP" class="SZA artistIcon"><img src="https://i.scdn.co/image/ab6761610000f1780895066d172e1f51f520bc65"></div><div id="1ybINI1qPiFbwDXamRtwxD" class="Smino artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178665eca0564934b82f47c49bc"></div><div id="2YZyLoL8N0Wb9xBt1NhZWg" class="Kendrick_Lamar artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178437b9e2a82505b3d93ff1022"></div><div id="3jK9MiCrA42lLAdMGUZpwa" class="Anderson_.Paak artistIcon"><img src="https://i.scdn.co/image/ab6761610000f17896287bd47570ff13f0c01496"></div><div id="6aaMZ3fcfLv4tEbmY7bjRM" class="Isaiah_Rashad artistIcon"><img src="https://i.scdn.co/image/ab6761610000f1781ff1685224034e6c12538722"></div><div id="0pTI6gG0UHQjylvV6mPuHv" class="Flozigg artistIcon"><img src="https://i.scdn.co/image/ab6761610000f1780f625b57107dd3bfac71fefa"></div><div id="062tCT8GVioC9EMiI9jeOV" class="BLK_ODYSSY artistIcon"><img src="https://i.scdn.co/image/ab6761610000f17823687e58992f1da5c1cba960"></div><div id="20wkVLutqVOYrc0kxFs7rA" class="Daniel_Caesar artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178e5bc630548fb3517cf90edb8"></div><div id="4V8LLVI7PbaPR0K2TGSxFF" class="Tyler,_The_Creator artistIcon"><img src="https://i.scdn.co/image/ab6761610000f1788278b782cbb5a3963db88ada"></div><div id="57vWImR43h4CaDao012Ofp" class="Steve_Lacy artistIcon"><img src="https://i.scdn.co/image/ab6761610000f17809ac9d040c168d4e4f58eb42"></div><div id="2h93pZq0e7k5yf4dywlkpM" class="Frank_Ocean artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178ee3123e593174208f9754fab"></div><div id="3EltmUERxZN7vQxEvDXyuQ" class="Maxx_Good$ artistIcon"><img src="https://i.scdn.co/image/ab6761610000f17896f6118aa09a278949e55cd8"></div><div id="3tlXnStJ1fFhdScmQeLpuG" class="Brent_Faiyaz artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178e187dca750abfd3688836309"></div><div id="2ICR2m4hOBPhaYiZB3rnLW" class="Sonder artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178fc55ad52c4f90c036acc8c15"></div><div id="5RTLRtXjbXI2lSXc6jxlAz" class="Ravyn_Lenae artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178f1b6211dfc88bef23efc6a1b"></div><div id="2efrqekWSHlvhATD50AG3m" class="Orion_Sun artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178b4c956981d00ad66e06792fa"></div><div id="3QTDHixorJelOLxoxcjqGx" class="SiR artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178972a4e990fb36451db2f40f2"></div></div>
-                
-                <button id="submitArtists" disabled="">Submit Artists</button>
-            </div>
+        <div class="artistSelection">
+            <h1>PLAYLISTIFY</h1>
+            <h1>DATE</h1>
+            <h1>SELECT UP TO 5 ARTISTS</h1>
+            <button>1M</button>
+            <button>6M</button>
+            <button>ALL TIME</button>
+            <div class="artistDisplay"><div id="06HL4z0CvFAxyc27GXpf02" class="Taylor_Swift artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178859e4c14fa59296c8649e0e4"></div><div id="3DGlTwdM5Dim9XQipb3jMf" class="Jordan_Ward artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178886e735695eb17a0e29e0a50"></div><div id="332mFY6yBda91AsIOSKirG" class="Planet_Giza artistIcon"><img src="https://i.scdn.co/image/ab6761610000f1789e79f130a958dd2cdf32cebd"></div><div id="7tYKF4w9nC0nq9CsPZTHyP" class="SZA artistIcon"><img src="https://i.scdn.co/image/ab6761610000f1780895066d172e1f51f520bc65"></div><div id="1ybINI1qPiFbwDXamRtwxD" class="Smino artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178665eca0564934b82f47c49bc"></div><div id="2YZyLoL8N0Wb9xBt1NhZWg" class="Kendrick_Lamar artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178437b9e2a82505b3d93ff1022"></div><div id="3jK9MiCrA42lLAdMGUZpwa" class="Anderson_.Paak artistIcon"><img src="https://i.scdn.co/image/ab6761610000f17896287bd47570ff13f0c01496"></div><div id="6aaMZ3fcfLv4tEbmY7bjRM" class="Isaiah_Rashad artistIcon"><img src="https://i.scdn.co/image/ab6761610000f1781ff1685224034e6c12538722"></div><div id="0pTI6gG0UHQjylvV6mPuHv" class="Flozigg artistIcon"><img src="https://i.scdn.co/image/ab6761610000f1780f625b57107dd3bfac71fefa"></div><div id="062tCT8GVioC9EMiI9jeOV" class="BLK_ODYSSY artistIcon"><img src="https://i.scdn.co/image/ab6761610000f17823687e58992f1da5c1cba960"></div><div id="20wkVLutqVOYrc0kxFs7rA" class="Daniel_Caesar artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178e5bc630548fb3517cf90edb8"></div><div id="4V8LLVI7PbaPR0K2TGSxFF" class="Tyler,_The_Creator artistIcon"><img src="https://i.scdn.co/image/ab6761610000f1788278b782cbb5a3963db88ada"></div><div id="57vWImR43h4CaDao012Ofp" class="Steve_Lacy artistIcon"><img src="https://i.scdn.co/image/ab6761610000f17809ac9d040c168d4e4f58eb42"></div><div id="2h93pZq0e7k5yf4dywlkpM" class="Frank_Ocean artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178ee3123e593174208f9754fab"></div><div id="3EltmUERxZN7vQxEvDXyuQ" class="Maxx_Good$ artistIcon"><img src="https://i.scdn.co/image/ab6761610000f17896f6118aa09a278949e55cd8"></div><div id="3tlXnStJ1fFhdScmQeLpuG" class="Brent_Faiyaz artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178e187dca750abfd3688836309"></div><div id="2ICR2m4hOBPhaYiZB3rnLW" class="Sonder artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178fc55ad52c4f90c036acc8c15"></div><div id="5RTLRtXjbXI2lSXc6jxlAz" class="Ravyn_Lenae artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178f1b6211dfc88bef23efc6a1b"></div><div id="2efrqekWSHlvhATD50AG3m" class="Orion_Sun artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178b4c956981d00ad66e06792fa"></div><div id="3QTDHixorJelOLxoxcjqGx" class="SiR artistIcon"><img src="https://i.scdn.co/image/ab6761610000f178972a4e990fb36451db2f40f2"></div></div>
+            
+            <button id="submitArtists" disabled="">Submit Artists</button>
+        </div>
+
+        <script src="/js/token.js"></script>
+        <script src="/js/app.js"></script>
     
-            <script src="/js/token.js"></script>
-            <script src="/js/app.js"></script>
         
-        </body>
         </div>
 
         <script src = "/js/token.js"></script>

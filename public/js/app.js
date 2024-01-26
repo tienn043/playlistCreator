@@ -39,7 +39,7 @@ const APIController = (function(){
         });
         
         const data = await result.json();
-        console.log(data);
+        
         return data.items;
     };
 
@@ -167,10 +167,14 @@ const APIController = (function(){
 //UI Controller
 const UIController = (function(){
     const DOMelements = {  
-        submitArtists : '#submitArtists',
-        artistDisplay : '.artistDisplay'
+        submit : '.submit',
+        deselect: '.deselect',
+        artistDisplay : '.artistDisplay',
+        short_term: '.short_term',
+        medium_term: '.medium_term',
+        long_term: '.long_term'
     /*
-        submitArtists : '#submitArtists',
+        submit : '#submit',
         artistDisplay : '#artistDisplay'
     */
     }
@@ -180,17 +184,26 @@ const UIController = (function(){
             return{
                 /**
                  * artistDisplay : document.getElementById('artistDisplay'),
-                submitArtists : document.getElementById('submitArtists')
+                submit : document.getElementById('submit')
                  */
+                short_term : document.querySelector(DOMelements.short_term),
+                medium_term : document.querySelector(DOMelements.medium_term),
+                long_term : document.querySelector(DOMelements.long_term),
                 artistDisplay : document.querySelector(DOMelements.artistDisplay),
-                submitArtists : document.getElementById('submitArtists')
+                submit : document.querySelector(DOMelements.submit),
+                deselect : document.querySelector(DOMelements.deselect)
             }
         },
 
         toggleSelection(e){
             if(e.target !== e.currentTarget){
                 let artistAmount = document.getElementsByClassName("selectedIcon").length;
-                const parent = e.target.parentNode;
+
+                let parent = e.target.parentNode;
+                if(e.target.classList.contains("text")){
+                    parent  = parent.parentNode;
+                }
+                
 
                 if(artistAmount >= 5 && !parent.classList.contains('selectedIcon')){
                     console.log("limit reached");
@@ -203,10 +216,16 @@ const UIController = (function(){
         },
 
         buttonToggle(amount){
-            if(amount > 0)
-                this.inputs().submitArtists.disabled = false;
-            else
-                this.inputs().submitArtists.disabled = true;
+            if(amount > 0){
+                this.inputs().submit.disabled = false;
+                this.inputs().deselect.disabled = false;
+            }
+            else{
+                this.inputs().submit.disabled = true;
+                this.inputs().deselect.disabled = true;
+            }
+                
+
             
         },
 
@@ -216,8 +235,15 @@ const UIController = (function(){
             selectedArtists.forEach((artist) => artistArray.push(artist.id));
 
             return artistArray;
-        }
+        },
     
+        deselect(){
+            const items = document.querySelectorAll('.selectedIcon');
+            for(const item of items){
+                item.classList.remove('selectedIcon');
+            }
+            this.buttonToggle(document.getElementsByClassName("selectedIcon").length);
+        }
         
     }
     
@@ -228,6 +254,55 @@ const APPController = (function(APICtrl, UICtrl) {
     DOMInputs = UICtrl.inputs();
     let playlistNum = 60;
 
+
+    const changeDisplay = async (term) => {
+        const accessToken = localStorage.getItem("accessToken");
+        const topArtists = await APICtrl.getTopArtists(accessToken, term, 20);
+        const display = DOMInputs.artistDisplay;
+        let icons = document.querySelectorAll('.artistIcon');
+
+
+
+        for(let i = 0; i < 20; i++){
+            if(icons[i] && !topArtists[i]){
+                icons[i].remove();
+            }else if(!icons[i] && topArtists[i]){
+                const child = document.createElement('div');
+                child.id = topArtists[i]['id'];
+                let name = topArtists[i]['name'];
+                
+                const overlay = document.createElement('div');
+                overlay.classList.add('overlay');
+    
+                const overlayText = document.createElement('div');
+                overlayText.classList = 'text';
+                overlayText.innerText = name;
+    
+                //child.classList.add(name.replaceAll(" ", "_"));
+                child.classList.add('artistIcon');
+                
+                const image = new Image();
+                image.src = topArtists[i]['images'][2]['url'];
+                image.alt = name;
+    
+                
+                overlay.append(overlayText);
+                child.append(image);
+                child.append(overlay);    
+                child.setAttribute('tabindex', 0);
+    
+                display.appendChild(child);
+            }else if(icons[i] && topArtists[i]){
+                icons[i].id = topArtists[i]['id'];
+
+                let image = icons[i].querySelector("img");
+                image.src = topArtists[i]['images'][2]['url'];
+    
+                let text = icons[i].querySelector('.overlay .text');
+                text.innerText = topArtists[i]['name'];    
+            }       
+        }
+    }
 
     //loads artist display on page load
     const loadArtists = async () => {
@@ -245,13 +320,25 @@ const APPController = (function(APICtrl, UICtrl) {
             child.id = artist['id'];
             let name = artist['name'];
             
-            child.classList.add(name.replaceAll(" ", "_"));
+            const overlay = document.createElement('div');
+            overlay.classList.add('overlay');
+
+            const overlayText = document.createElement('div');
+            overlayText.classList = 'text';
+            overlayText.innerText = name;
+
+            //child.classList.add(name.replaceAll(" ", "_"));
             child.classList.add('artistIcon');
             
             const image = new Image();
             image.src = artist['images'][2]['url'];
+            image.alt = name;
 
+            
+            overlay.append(overlayText);
             child.append(image);
+            child.append(overlay);
+            child.setAttribute('tabindex', 0);
 
             display.appendChild(child);
         }
@@ -286,13 +373,21 @@ const APPController = (function(APICtrl, UICtrl) {
         //selectedAlbumNum minimizes number of API calls to Spotify
         let tempArray = [];
         const selectedAlbumsNum = Math.floor(singleAlbums.length/3);
+
+
         
         for(let i = 0; i < selectedAlbumsNum; i++){
             let randomNumber = Math.floor(Math.random() * (singleAlbums.length));
             const albumTracks = await APIController.getAlbumTracks(accessToken, singleAlbums[randomNumber]['id'], 20);
             
             for(const track of albumTracks){
-                tempArray.push(track['id']);
+                let artistFound = track['artists'].some(function(obj) {
+                    return Object.values(obj).includes(artistID);
+                });
+
+                if(artistFound){
+                    tempArray.push(track['id']);
+                }
             }
             singleAlbums.splice(randomNumber, 1);
         }
@@ -332,51 +427,91 @@ const APPController = (function(APICtrl, UICtrl) {
         return randomTracks;
     }
 
+    //deselect listener
+    DOMInputs.deselect.addEventListener('click', async (e) => {
+        UICtrl.deselect();
+    });
+
     //icons event listener
     DOMInputs.artistDisplay.addEventListener('click', async (e) => {
         e.preventDefault();
         UICtrl.toggleSelection(e);
     });
+/*
+    //icons event listener
+    DOMInputs.artistDisplay.addEventListener('keypress', async (e) => {
+        e.preventDefault();
+        if(e.keyCode === 13){
+            if(e.target !== e.currentTarget){
+                
+            }
+        }
+        
+    });
+*/
 
     //submit button event listener 
-    DOMInputs.submitArtists.addEventListener('click', async (e) => {
+    DOMInputs.submit.addEventListener('click', async (e) => {
         const accessToken = localStorage.getItem("accessToken");
 
         let playlistTracks = [];
         const idList = UICtrl.submit(e);
+
+        
         const idListString = idList.join('%2C');
 
         const recommendationSize = Math.floor(playlistNum*(2/3));
         const remainder = playlistNum - recommendationSize;
 
-        let recommendationsArr = await APICtrl.getRecommendations(accessToken, recommendationSize, idListString, 90);
+        
 
         //adds songs from top artists
         for(const id of idList) {
             const [catalog, size] = await getEntireCatalog(id);
-            let randomSongs = await getRandomSongs(accessToken, catalog, Math.ceil(remainder/idList.length), size);
+            let randomSongs = await getRandomSongs(catalog, Math.ceil(remainder/idList.length), size);
 
             playlistTracks = playlistTracks.concat(randomSongs);
         }
 
+        let recommendationsArr = await APICtrl.getRecommendations(accessToken, recommendationSize, idListString, 90);
         //adding recommendation tracks
         for(const recommendation of recommendationsArr){
             playlistTracks = playlistTracks.concat(recommendation['id']);
         }
 
-        const user = await APICtrl.getUserProfile();
-        const userID = user['id'];
-        console.log(userID);
 
         const playlistData = await APICtrl.createPlaylist(accessToken);
         const playlistID = playlistData['id'];
         const uris = playlistTracks.map(str => "spotify:track:" + str);
 
         const generatedPlaylist = await APICtrl.addTracks(accessToken, uris, playlistID);
-        console.log(generatedPlaylist);
+        console.log(generatedPlaylist);  
+        
     });
 
+    DOMInputs.short_term.addEventListener('click', async(e) => {
+        UICtrl.deselect();
+        changeDisplay('short_term');
+        DOMInputs.short_term.disabled = true;
+        DOMInputs.medium_term.disabled = false;
+        DOMInputs.long_term.disabled = false;
+    });
+    DOMInputs.medium_term.addEventListener('click', async(e) => {
+        UICtrl.deselect();
+        changeDisplay('medium_term');
+        DOMInputs.short_term.disabled = false;
+        DOMInputs.medium_term.disabled = true;
+        DOMInputs.long_term.disabled = false;
 
+    });
+    DOMInputs.long_term.addEventListener('click', async(e) => {
+        UICtrl.deselect();
+        changeDisplay('long_term');
+        DOMInputs.short_term.disabled = false;
+        DOMInputs.medium_term.disabled = false;
+        DOMInputs.long_term.disabled = true;
+    });
+    
 
     return {
         init() {

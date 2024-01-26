@@ -10,7 +10,7 @@ var app = express();
 
 app.use(express.static('public'));
 app.use('/css', express.static(path.join(__dirname, 'public/css')));
-app.use('/html', express.static(path.join(__dirname, 'public/html')));
+app.use('/fonts', express.static(path.join(__dirname, 'public/fonts')));
 app.use('/js', express.static(path.join(__dirname, 'public/js')));
 
 //app.use(express.static(path.join(__dirname, 'public')));
