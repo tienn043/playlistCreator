@@ -497,7 +497,7 @@ const APPController = (function(APICtrl, UICtrl) {
         const uris = playlistTracks.map(str => "spotify:track:" + str);
 
         const generatedPlaylist = await APICtrl.addTracks(accessToken, uris, playlistID);
-        console.log(generatedPlaylist);  
+        
         
     });
 
