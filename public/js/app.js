@@ -215,6 +215,20 @@ const UIController = (function(){
             }
         },
 
+        toggleTabbedSelection(e){
+            if(e.target !== e.currentTarget){
+                let artistAmount = document.getElementsByClassName("selectedIcon").length;
+
+                if(artistAmount >= 5 && !e.target.classList.contains('selectedIcon')){
+                    console.log("limit reached");
+                }
+                else{
+                    e.target.classList.toggle('selectedIcon');
+                }
+                this.buttonToggle(document.getElementsByClassName("selectedIcon").length);
+            }
+        },
+
         buttonToggle(amount){
             if(amount > 0){
                 this.inputs().submit.disabled = false;
@@ -437,18 +451,16 @@ const APPController = (function(APICtrl, UICtrl) {
         e.preventDefault();
         UICtrl.toggleSelection(e);
     });
-/*
+
     //icons event listener
     DOMInputs.artistDisplay.addEventListener('keypress', async (e) => {
         e.preventDefault();
         if(e.keyCode === 13){
-            if(e.target !== e.currentTarget){
-                
-            }
+            UICtrl.toggleTabbedSelection(e);
         }
         
     });
-*/
+
 
     //submit button event listener 
     DOMInputs.submit.addEventListener('click', async (e) => {
