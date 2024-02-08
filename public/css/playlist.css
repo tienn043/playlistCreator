@@ -1,6 +1,8 @@
 body{
     background-color: var(--bg-color);
     color: var(--button-color);
+    display: flex;
+    flex-direction: column;
 }
 
 
@@ -12,7 +14,7 @@ body{
 
 
 .prompt{
-    font-size: 4.1rem;
+    font-size: 3.9rem;
     margin: 0;
 }
 
@@ -39,14 +41,15 @@ body{
     cursor: pointer;
 }
 
+/*
 .artistIcon:focus .overlay{
     opacity: 0.7;
     cursor: pointer;
 }
-
+*/
 .artistIcon{
-    width: 104px; /* Set the width of the div */
-    height: 104px; /* Set the height of the div */
+    width: 98px; /* Set the width of the div */
+    height: 98px; /* Set the height of the div */
     overflow: hidden; /* Hide overflowing content */
     position: relative; 
 }
@@ -117,7 +120,7 @@ body{
     flex-wrap: wrap;
     justify-content: center;
     gap: 4px;
-    width: 42%;
+    width: 38vw;
     margin: 1.5%;
 }
 /*playlist maker section*/
@@ -126,17 +129,31 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    height: 100vh;
 }
 
 
 /*playlist overview*/
+.playlistOptions{
+    margin: auto;
+    width:45%;
+    height:auto;
+}
 
-
+.playlistDisplay{
+    margin:auto;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    width:45%;
+    height:auto;
+}
 
 
 .playlistSection{
-    display: flex;
+    display: none;
     justify-content: space-between;
+    height: 100vh;
 }
 
 .playlistName{
@@ -148,6 +165,59 @@ body{
     height: 160px; /* Set the height of the div */
     overflow: hidden; /* Hide overflowing content */
     position: relative; 
-    background-color: var(--accent);
+}
+
+.playlistPicture img{
+    width: 100%; /* Make the image fill the entire width of the div */
+    height: auto; /* Maintain the aspect ratio of the image */
+    position: absolute; /* Position the image absolutely within the div */
+    top: 0; 
+    left: 0; 
+    right: 0;
+    bottom: 0;
+}
+.list{
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    overflow: auto;
+    width: 70%;
+    height: 60vh;
+    margin:auto;
+}
+
+.list li{
+    flex: 1 1 auto;
+}
+
+.list h3{   
+    margin: 0;
+}
+
+.list p{
+    margin-top: 0;
+}
+
+.trackText{
+    float: left;
+    margin-left: 5%;
+}
+
+.trackPhoto{
+    width: 50px; /* Set the width of the div */
+    height: 50px; /* Set the height of the div */
+    overflow: hidden; /* Hide overflowing content */
+    position: relative;
+    float: left; 
+}
+
+.trackPhoto img{
+    width: 100%; /* Make the image fill the entire width of the div */
+    height: auto; /* Maintain the aspect ratio of the image */
+    position: absolute; /* Position the image absolutely within the div */
+    top: 0; 
+    left: 0; 
+    right: 0;
+    bottom: 0;
 }
 

@@ -13,6 +13,7 @@
 
 html {
     background-color: var(--bg-color);
+    scroll-behavior: smooth;
 }
 
 body {
@@ -50,9 +51,10 @@ button:active:hover {
     background-color: var(--dark-accent);
 }
 
-h1 {
+h1,h2,h3 {
     font-family: 'AKIRA';
 }
+
 
 p{
     font-family: 'Inter',sans-serif;
