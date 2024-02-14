@@ -6,5 +6,5 @@
 
 <h2>Why?</h2>
 <p>
-  I really enjoy listening to music and visualizing my Spotify data with webapps like Receiptify and Obscurify. 
+  I really enjoy listening to music and visualizing my Spotify data with webapps like Receiptify and Obscurify. I thought that this project would help expand my skills and knowledge in web development as well as combine my passions in coding and graphic design. It is my first real experience in front end web development, and the webapp has proved to be a useful tool in my daily life. I am able to curate and customize multiple playlists of different wtih little hassle.
 </p>
