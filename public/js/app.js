@@ -27,6 +27,7 @@ const APIController = (function(){
       
         const body = await fetch(url, payload);
         const response = await body.json();
+        console.log(response.access_token);
         return response.access_token;
     };
 
@@ -38,7 +39,7 @@ const APIController = (function(){
         });
         
         const data = await result.json();
-        
+        console.log(data);
         return data.items;
     };
 
@@ -103,7 +104,7 @@ const APIController = (function(){
     //creates playlist
     const _createPlaylist = async (accessToken) => {
         const requestBody = JSON.stringify({
-            "name": "New Playlist",
+            "name": "PLAYLISTIFY MIX",
             "description": "A blend of your favorite artists' songs and recommendations",
             "public": false
         });
@@ -190,17 +191,13 @@ const UIController = (function(){
         medium_term: '.medium_term',
         long_term: '.long_term',
         list: '.list',
-        playlist_pic: '.playlistPicture',
-        playlistSection : '.playlistSection'
+        anotherButton : '.anotherButton',
+        renameButton : '.renameButton'
     }
 
     return {
         inputs(){
             return{
-                /**
-                 * artistDisplay : document.getElementById('artistDisplay'),
-                submit : document.getElementById('submit')
-                 */
                 short_term : document.querySelector(DOMelements.short_term),
                 medium_term : document.querySelector(DOMelements.medium_term),
                 long_term : document.querySelector(DOMelements.long_term),
@@ -208,8 +205,8 @@ const UIController = (function(){
                 submit : document.querySelector(DOMelements.submit),
                 deselect : document.querySelector(DOMelements.deselect),
                 list : document.querySelector(DOMelements.list),
-                playlist_pic: document.querySelector(DOMelements.playlist_pic),
-                playlistSection: document.querySelector(DOMelements.playlistSection)
+                renameButton : document.querySelector(DOMelements.renameButton),
+                anotherButton : document.querySelector(DOMelements.anotherButton)
             }
         },
 
@@ -459,19 +456,27 @@ const APPController = (function(APICtrl, UICtrl) {
         return randomTracks;
     }
 
-    const displayTracks = async (playlistTracks) => {
-        
+    const displayTracks = async (playlistTracks) => {        
+        const items = document.querySelectorAll('.listItem');
+        if(items){
+            for(const item of items){
+                item.remove();
+            }
+        }
+
+        //ccreates list elements and adds them to the list
         const tracks = playlistTracks["tracks"]["items"];
         for(const track of tracks){
             const trackItem = track.track;
             let album = trackItem.album;
             let artists = trackItem.artists;
             let names = artists.map(artist => artist.name);
-            names = names.join(' ');
+            names = names.join(', ');
             
             let item = document.createElement("li");
             let text = document.createElement("div");
             let photo = document.createElement("div");
+            item.classList.add("listItem");
             photo.classList.add("trackPhoto");
             const image = new Image();
             image.alt = album.name;
@@ -494,28 +499,32 @@ const APPController = (function(APICtrl, UICtrl) {
             DOMInputs.list.appendChild(item);
         }
     }
+
     //creates playlist track display
     const playlistDisplay = async (playlistTracks) => {
         const img_url = playlistTracks["images"][0]["url"];
-        
+        const playlist_pic = document.querySelector('.playlistPicture');
+
+
         //handles if playlist picture already exists
-        if(DOMInputs.playlist_pic.getElementsByTagName("img").src){
+        if(playlist_pic.getElementsByTagName("img").src){
             image.src = img_url;
         }else{
             const image = new Image();
             image.src = img_url;
             image.alt = "new playlist cover";
-            DOMInputs.playlist_pic.appendChild(image);
+            playlist_pic.appendChild(image);
         }
 
         await displayTracks(playlistTracks);
         
         //if user has already made playlist
-        let sectionDisplay = window.getComputedStyle(DOMInputs.playlistSection, null);
+        const section = document.querySelector('.playlistSection');
+        let sectionDisplay = window.getComputedStyle(section, null);
         if(sectionDisplay.getPropertyValue("display") == 'none'){
-            DOMInputs.playlistSection.style.display = 'flex';
+            section.style.display = 'flex';
         }
-        DOMInputs.playlistSection.scrollIntoView();
+        section.scrollIntoView();
     }
 
     //deselect listener
@@ -575,11 +584,15 @@ const APPController = (function(APICtrl, UICtrl) {
         const uris = playlistTracks.map(str => "spotify:track:" + str);
 
         const generatedPlaylist = await APICtrl.addTracks(accessToken, uris, playlistID);
-        console.log(playlistID);
         const playlistObj = await APICtrl.getPlaylist(accessToken, playlistID);
 
         await playlistDisplay(playlistObj);
         
+    });
+
+    DOMInputs.anotherButton.addEventListener('click', async(e) => {
+        const section = document.querySelector('.artistSelection');
+        section.scrollIntoView();
     });
 
     DOMInputs.short_term.addEventListener('click', async(e) => {

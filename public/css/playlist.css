@@ -8,7 +8,7 @@ body{
 
 
 .selectedIcon .overlay{
-    background-color: rgb(45, 45, 45);
+    background-color: var(--alt-accent);
     opacity: .9;
 }
 
@@ -32,7 +32,7 @@ body{
     right: 0;
     bottom: 0;
     transition: .15s ease;
-    background-color: var(--button-color);
+    background-color: var(--alt-accent);
     opacity: 0;
 }
 
@@ -93,19 +93,19 @@ body{
 }
 
 .termContainer button:disabled{
-    background-color: var(--accent);
+    background-color: var(--alt-accent);
     color: white;
     pointer-events: none;
 }
 
 .termContainer button:hover{
     background-color: transparent;
-    color: var(--accent);
+    color: var(--alt-accent);
 }
 
 .termContainer button:active:hover{
     background-color: transparent;
-    color: var(--dark-accent);
+    color: var(--alt--accent);
 }
 
 .submitContainer button:disabled{
@@ -138,22 +138,36 @@ body{
     margin: auto;
     width:45%;
     height:auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .playlistDisplay{
     margin:auto;
     display: flex;
     flex-direction: column;
-    align-content: center;
-    width:45%;
-    height:auto;
+    align-items: center;
+    justify-content: center;
+    width: 45%;
+    height: auto;
 }
 
 
 .playlistSection{
+    margin: 0;
+    background-color: var(--alt-accent);
     display: none;
     justify-content: space-between;
     height: 100vh;
+}
+
+.playlistSection h1, h2, h3, p{
+    color: var(--button-text);
+}
+
+.playlistSection button:hover{
+    background-color: var(--dark-alt-accent);
 }
 
 .playlistName{
@@ -161,8 +175,8 @@ body{
 }
 
 .playlistPicture{
-    width: 160px; /* Set the width of the div */
-    height: 160px; /* Set the height of the div */
+    width: 185px; /* Set the width of the div */
+    height: 185px; /* Set the height of the div */
     overflow: hidden; /* Hide overflowing content */
     position: relative; 
 }
@@ -176,6 +190,7 @@ body{
     right: 0;
     bottom: 0;
 }
+
 .list{
     display: flex;
     flex-direction: column;
@@ -187,11 +202,29 @@ body{
 }
 
 .list li{
-    flex: 1 1 auto;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
 }
 
-.list h3{   
+.list h3{
+    overflow: hidden; 
+    display: inline-block;
     margin: 0;
+}
+
+.list h3:hover{
+    animation: scroll 5s linear infinite;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0); /* Start from initial position */
+    }
+    100% {
+        transform: translateX(-100%); /* Scroll to the left */
+    }
 }
 
 .list p{
@@ -199,11 +232,14 @@ body{
 }
 
 .trackText{
+    text-wrap: nowrap;
     float: left;
     margin-left: 5%;
+    overflow: hidden;
 }
 
 .trackPhoto{
+    flex: 0 0 auto;
     width: 50px; /* Set the width of the div */
     height: 50px; /* Set the height of the div */
     overflow: hidden; /* Hide overflowing content */

@@ -1,11 +1,21 @@
 :root{
     /*--bg-color: rgb(152, 177, 103);*/
     /*--bg-color: hsl(80, 32.2%, 54.9%);*/
-    --bg-color: white;
+    /*--bg-color: white;
     --button-color: rgb(45, 45, 45); 
     --button-text: white;
     --accent:  rgb(61, 106, 61);
     --dark-accent: rgb(9, 58, 9);
+    --alt-accent: rgb(55, 55, 232);
+    --dark-alt-accent: rgb(40, 40, 164);
+    */
+    --bg-color: rgb(255, 247, 228);
+    --button-color: rgb(45, 45, 45); 
+    --button-text: white;
+    --accent:  rgb(61, 106, 61);
+    --dark-accent: rgb(9, 58, 9);
+    --alt-accent: rgba(41, 41, 220, 0.793);
+    --dark-alt-accent: rgb(31, 31, 133);
 }
 
 
@@ -17,6 +27,7 @@ html {
 }
 
 body {
+    margin: 0;
     background-color: var(--bg-color);
 }
 
@@ -42,13 +53,13 @@ button{
 
 button:hover {
     /*background-color: rgb(61, 106, 61);*/
-    background-color: var(--accent);
+    background-color: var(--alt-accent);
     cursor: pointer;
 
 }
 
 button:active:hover {
-    background-color: var(--dark-accent);
+    background-color: var(--dark-alt-accent);
 }
 
 h1,h2,h3 {
