@@ -48,20 +48,18 @@ body{
 }
 */
 .artistIcon{
-    width: 98px; /* Set the width of the div */
-    height: 98px; /* Set the height of the div */
-    overflow: hidden; /* Hide overflowing content */
-    position: relative; 
+    width: 100%;  
+    padding-bottom: 100%;
+    overflow: hidden;  
+    position: relative;
 }
 
 .artistIcon img{
     width: 100%; /* Make the image fill the entire width of the div */
     height: auto; /* Maintain the aspect ratio of the image */
     position: absolute; /* Position the image absolutely within the div */
-    top: 0; 
-    left: 0; 
-    right: 0;
-    bottom: 0;
+    object-fit: contain;
+    object-position: center;
 }
 
 .text{
@@ -115,6 +113,7 @@ body{
 
 /*icon display container*/
 .artistDisplay{
+    /*
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -122,6 +121,12 @@ body{
     gap: 4px;
     width: 38vw;
     margin: 1.5%;
+    */
+    display: grid;
+    grid-template-columns:repeat(5,1fr);
+    width:70vh;
+    gap:1.5%;
+    margin: 3vh;
 }
 /*playlist maker section*/
 .artistSelection{
@@ -201,11 +206,14 @@ body{
     margin:auto;
 }
 
-.list li{
+.list li{/*
     flex: 0 0 auto;
     display: flex;
     flex-direction: row;
     overflow: hidden;
+    */
+    display: grid;
+    grid-template-columns: 1fr 7fr;
 }
 
 .list h3{
@@ -238,13 +246,18 @@ body{
     overflow: hidden;
 }
 
-.trackPhoto{
+.trackPhoto{/*
     flex: 0 0 auto;
-    width: 50px; /* Set the width of the div */
-    height: 50px; /* Set the height of the div */
-    overflow: hidden; /* Hide overflowing content */
+    width: 50px; 
+    height: 50px; 
+    overflow: hidden; 
     position: relative;
-    float: left; 
+    float: left;
+    */ 
+    width: 100%;  
+    padding-bottom: 100%;
+    overflow: hidden;  
+    position: relative;
 }
 
 .trackPhoto img{
