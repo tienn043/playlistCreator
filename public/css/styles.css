@@ -9,7 +9,8 @@
     --alt-accent: rgb(55, 55, 232);
     --dark-alt-accent: rgb(40, 40, 164);
     */
-    --bg-color: rgb(255, 247, 228);
+    /*--bg-color: rgb(255, 247, 228);*/
+    --bg-color: rgb(237, 237, 237);
     --button-color: rgb(45, 45, 45); 
     --button-text: white;
     --accent:  rgb(61, 106, 61);

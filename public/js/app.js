@@ -210,6 +210,24 @@ const UIController = (function(){
             }
         },
 
+        setClasses(e) {
+            const isScrollable = e.scrollHeight > e.clientHeight;
+            
+            // GUARD: If eement is not scrollable, remove all classes
+            if (!isScrollable) {
+              e.classList.remove('is-bottom-overflowing', 'is-top-overflowing');
+              return;
+            }
+            
+            // Otherwise, the eement is overflowing!
+            // Now we just need to find out which direction it is overflowing to (can be both).
+            // One pixe is added to the height to account for non-integer heights.
+            const isScrolledToBottom = e.scrollHeight < e.clientHeight + e.scrollTop + 1;
+            const isScrolledToTop = isScrolledToBottom ? false : e.scrollTop === 0;
+            e.classList.toggle('is-bottom-overflowing', !isScrolledToBottom);
+            e.classList.toggle('is-top-overflowing', !isScrolledToTop);
+          },
+
         toggleSelection(e){
             if(e.target !== e.currentTarget){
                 let artistAmount = document.getElementsByClassName("selectedIcon").length;
@@ -503,6 +521,7 @@ const APPController = (function(APICtrl, UICtrl) {
     //creates playlist track display
     const playlistDisplay = async (playlistTracks) => {
         const img_url = playlistTracks["images"][0]["url"];
+        /* 
         const playlist_pic = document.querySelector('.playlistPicture');
 
 
@@ -515,7 +534,7 @@ const APPController = (function(APICtrl, UICtrl) {
             image.alt = "new playlist cover";
             playlist_pic.appendChild(image);
         }
-
+*/
         await displayTracks(playlistTracks);
         
         //if user has already made playlist
@@ -589,12 +608,12 @@ const APPController = (function(APICtrl, UICtrl) {
         await playlistDisplay(playlistObj);
         
     });
-
+/*
     DOMInputs.anotherButton.addEventListener('click', async(e) => {
         const section = document.querySelector('.artistSelection');
         section.scrollIntoView();
     });
-
+*/
     DOMInputs.short_term.addEventListener('click', async(e) => {
         UICtrl.deselect();
         changeDisplay('short_term');
@@ -618,6 +637,12 @@ const APPController = (function(APICtrl, UICtrl) {
         DOMInputs.long_term.disabled = true;
     });
     
+    DOMInputs.list.addEventListener('scroll', async(e) => {
+        const el = e.currentTarget;
+        UICtrl.setClasses(el);
+    });
+
+    UICtrl.setClasses(DOMInputs.list);
 
     return {
         init() {
