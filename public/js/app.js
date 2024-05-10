@@ -376,6 +376,7 @@ const APPController = (function(APICtrl, UICtrl) {
 
             //child.classList.add(name.replaceAll(" ", "_"));
             child.classList.add('artistIcon');
+            child.classList.add('artistStack');
             
             const image = new Image();
             image.src = artist['images'][2]['url'];
@@ -491,10 +492,11 @@ const APPController = (function(APICtrl, UICtrl) {
             let names = artists.map(artist => artist.name);
             names = names.join(', ');
             
-            let item = document.createElement("li");
+            let item = document.createElement("div");
             let text = document.createElement("div");
             let photo = document.createElement("div");
             item.classList.add("listItem");
+            item.classList.add("stacked");
             photo.classList.add("trackPhoto");
             const image = new Image();
             image.alt = album.name;

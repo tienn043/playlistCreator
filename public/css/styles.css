@@ -63,12 +63,15 @@ button:active:hover {
     background-color: var(--dark-alt-accent);
 }
 
-h1,h2,h3 {
+h1,h2{
     font-family: 'AKIRA';
 }
 
+img{
+    display: block;
+}
 
-p{
+h3, p{
     font-family: 'Inter',sans-serif;
 }
 

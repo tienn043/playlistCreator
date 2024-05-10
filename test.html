@@ -1,0 +1,1287 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create a Playlist</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&amp;family=Inter:wght@300&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="css/playlist.css" />
+  </head>
+  <body>
+    <style>
+        body{
+            background-color: var(--bg-color);
+            color: var(--button-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        
+        
+        .selectedIcon .overlay{
+            background-color: var(--alt-accent);
+            opacity: .9;
+        }
+        
+        
+        .prompt{
+            font-size: 2rem;
+            margin: 0;
+        }
+        
+        .options,.termContainer button, .submitContainer button{
+            font-size: 0.7rem;
+        }
+        
+        /*image container*/
+        .overlay{
+            width: 100%;
+            height: auto;
+            position: absolute;
+            top: 0; 
+            left: 0; 
+            right: 0;
+            bottom: 0;
+            transition: .15s ease;
+            background-color: var(--alt-accent);
+            opacity: 0;
+        }
+        
+        .artistIcon:hover .overlay{
+            opacity: 0.7;
+            cursor: pointer;
+        }
+        
+        /*
+        .artistIcon:focus .overlay{
+            opacity: 0.7;
+            cursor: pointer;
+        }
+        */
+        .artistIcon{
+            width: 100%;  
+            padding-bottom: 100%;
+            overflow: hidden;  
+            position: relative;
+        }
+        
+        .artistIcon img{
+            width: 100%; /* Make the image fill the entire width of the div */
+            height: auto; /* Maintain the aspect ratio of the image */
+            position: absolute; /* Position the image absolutely within the div */
+            object-fit: contain;
+            object-position: center;
+        }
+        
+        .text{
+            font-family: 'AKIRA';
+            color: white;
+            font-size: 70%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            text-align: center;
+            opacity: 1;
+            
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+            margin: 0;
+        }
+        
+        .termContainer{
+            display: flex;
+        }
+        
+        
+        .termContainer button{
+            background-color: transparent;
+            color: rgb(45,45,45);
+        }
+        
+        .termContainer button:disabled{
+            background-color: var(--alt-accent);
+            color: white;
+            pointer-events: none;
+        }
+        
+        .termContainer button:hover{
+            background-color: transparent;
+            color: var(--alt-accent);
+        }
+        
+        .termContainer button:active:hover{
+            background-color: transparent;
+            color: var(--alt--accent);
+        }
+        
+        .submitContainer {
+            margin-top: 20px;
+            display: flex;
+        }
+        
+        .submitContainer button:disabled{
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        /*icon display container*/
+        .artistDisplay{
+            display: grid;
+            grid-template-columns:repeat(2,1fr);
+            width:60vw;
+            gap:2px;
+        }
+        /*playlist maker section*/
+        .artistSelection{
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+            height: 200vh;
+        }
+        
+        /*seetings box*/
+        .settingsBox{
+            margin-top: 50px;
+            margin-bottom: 20px;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        
+        /*playlist overview*/
+        .playlistOptions{
+            margin: auto;
+            width:45%;
+            height:auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .playlistDisplay{
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .playlist{
+            width: 55%;
+            padding: 5%;
+            border-radius: 10%;
+            background-color: white;
+            margin:auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        
+        .playlistSection{
+            margin: 0;
+            background-color: var(--alt-accent);
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: column;
+            height: 200vh;
+        }
+        
+        .playlistSection h1{
+            color: var(--button-text);
+        }
+        
+        .playlistSection h2{
+            font-size: 2rem;
+        }
+        
+        
+        .playlistSection button:hover{
+            background-color: var(--dark-alt-accent);
+        }
+        
+        .playlistName{
+            font-size: 3.3rem;
+        }
+        
+        .playlistPicture{
+            width: 185px; /* Set the width of the div */
+            height: 185px; /* Set the height of the div */
+            overflow: hidden; /* Hide overflowing content */
+            position: relative; 
+        }
+        
+        .playlistPicture img{
+            width: 100%; /* Make the image fill the entire width of the div */
+            height: auto; /* Maintain the aspect ratio of the image */
+            position: absolute; /* Position the image absolutely within the div */
+            top: 0; 
+            left: 0; 
+            right: 0;
+            bottom: 0;
+        }
+        /*
+        .list{
+            display: flex;
+            flex-direction: column;
+            list-style-type: none;
+            overflow: auto;
+            width: auto;
+            height: 50vh;
+            padding-right: 10%;
+            padding-top: 7%;
+            padding-bottom: 7%;
+        */
+        
+          /* The CSS mask */
+        
+          /* The content mask is a linear gradient from top to bottom */
+          /*
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0, black var(--top-mask-size, 0), black calc(100% - var(--bottom-mask-size, 0)), transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0, black var(--top-mask-size, 0), black calc(100% - var(--bottom-mask-size, 0)), transparent 100%);
+            
+            --top-mask-size: 0%;
+            --bottom-mask-size: 0%;
+        
+        }
+        */
+        
+        .list{
+            display: grid;
+            grid-template-columns:repeat(5,1fr);
+            width:30vw;
+            gap:10px;
+        }
+        
+        .list.is-top-overflowing {
+            --top-mask-size: 7% !important;
+          }
+          
+        .list.is-bottom-overflowing {
+            --bottom-mask-size: 7% !important;
+        }
+        
+        
+        /*
+        .list li{
+            display: grid;
+            grid-template-columns: 1fr 7fr;
+        }
+        **/
+        
+        .list li{
+            display: flex;
+            flex-direction: column;
+        }
+        
+        
+        .list h3{
+            overflow: hidden; 
+            display: inline-block;
+            margin: 0;
+        }
+        
+        .list h3:hover{
+            animation: scroll 5s linear infinite;
+        }
+        
+        @keyframes scroll {
+            0% {
+                transform: translateX(0); /* Start from initial position */
+            }
+            100% {
+                transform: translateX(-100%); /* Scroll to the left */
+            }
+        }
+        
+        .list p{
+            margin-top: 0;
+        }
+        
+        .trackText{
+            text-wrap: nowrap;
+            float: left;
+            margin-left: 5%;
+            overflow: hidden;
+        }
+        
+        .trackPhoto{
+            width: 40px;  
+            overflow: hidden;  
+            position: relative;
+        }
+        
+        .trackPhoto img{
+            width: 100%; /* Make the image fill the entire width of the div */
+            height: auto; /* Maintain the aspect ratio of the image */
+            position: absolute; /* Position the image absolutely within the div */
+            object-fit: contain;
+            object-position: center;
+        }
+        
+        
+        /*
+        *
+        * MEDIA QUERIES
+        *
+        */
+        
+        @media screen and (min-width: 400px) {
+            .prompt{
+                font-size: 3.9rem;
+            }
+        
+            .options, .termContainer button, .submitContainer button{
+                font-size: 1rem;
+            }
+        
+            .artistSelection{
+                height: 100vh;
+            }
+        
+            .artistDisplay{
+                display: grid;
+                grid-template-columns:repeat(5,1fr);
+                width:660px;
+            }
+        
+            .playlistSection{
+                display: flexbox;
+                justify-content: space-between;
+                flex-direction: row;
+                height: 100vh;
+            }
+        
+            .submitContainer {
+                display: flex;
+                flex-direction: row;
+            }
+        
+            .playlistDisplay{
+                width: 45%;
+            }
+          }    
+    </style>
+    <!--Top artists selection display-->
+    <section class="artistSelection">
+      <div class="settingsBox">
+        <h1 class="prompt">PLAYLISTIFY</h1>
+        <h1 class="options">SELECT UP TO 5 ARTISTS</h1>
+        <div class="termContainer">
+          <button class="short_term" disabled="">1M</button>
+          <button class="medium_term">6M</button>
+          <button class="long_term">ALL-TIME</button>
+        </div>
+      </div>
+
+      <div class="artistDisplay" tabindex="0">
+        <div id="06HL4z0CvFAxyc27GXpf02" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f178e672b5f553298dcdccb0e676"
+            alt="Taylor Swift"
+          />
+          <div class="overlay"><div class="text">Taylor Swift</div></div>
+        </div>
+        <div
+          id="332mFY6yBda91AsIOSKirG"
+          class="artistIcon selectedIcon"
+          tabindex="0"
+        >
+          <img
+            src="https://i.scdn.co/image/ab6761610000f1789e79f130a958dd2cdf32cebd"
+            alt="Planet Giza"
+          />
+          <div class="overlay"><div class="text">Planet Giza</div></div>
+        </div>
+        <div id="2YZyLoL8N0Wb9xBt1NhZWg" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f178437b9e2a82505b3d93ff1022"
+            alt="Kendrick Lamar"
+          />
+          <div class="overlay"><div class="text">Kendrick Lamar</div></div>
+        </div>
+        <div id="1ybINI1qPiFbwDXamRtwxD" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f178fc5047d95db42b25c1d49aac"
+            alt="Smino"
+          />
+          <div class="overlay"><div class="text">Smino</div></div>
+        </div>
+        <div id="20wkVLutqVOYrc0kxFs7rA" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f178e5bc630548fb3517cf90edb8"
+            alt="Daniel Caesar"
+          />
+          <div class="overlay"><div class="text">Daniel Caesar</div></div>
+        </div>
+        <div id="3QTDHixorJelOLxoxcjqGx" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f17849650981041de1e313be97d8"
+            alt="SiR"
+          />
+          <div class="overlay"><div class="text">SiR</div></div>
+        </div>
+        <div id="2FXC3k01G6Gw61bmprjgqS" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f178ad85a585103dfc2f3439119a"
+            alt="Hozier"
+          />
+          <div class="overlay"><div class="text">Hozier</div></div>
+        </div>
+        <div id="2h93pZq0e7k5yf4dywlkpM" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f178ee3123e593174208f9754fab"
+            alt="Frank Ocean"
+          />
+          <div class="overlay"><div class="text">Frank Ocean</div></div>
+        </div>
+        <div id="3DGlTwdM5Dim9XQipb3jMf" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f178886e735695eb17a0e29e0a50"
+            alt="Jordan Ward"
+          />
+          <div class="overlay"><div class="text">Jordan Ward</div></div>
+        </div>
+        <div id="65dGLGjkw3UbddUg2GKQoZ" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f17861d28b161209f1ee239fdafa"
+            alt="BADBADNOTGOOD"
+          />
+          <div class="overlay"><div class="text">BADBADNOTGOOD</div></div>
+        </div>
+        <div id="5RTLRtXjbXI2lSXc6jxlAz" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f1782ab0c42a1f5fa7f7e2236e75"
+            alt="Ravyn Lenae"
+          />
+          <div class="overlay"><div class="text">Ravyn Lenae</div></div>
+        </div>
+        <div id="7tYKF4w9nC0nq9CsPZTHyP" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f1780895066d172e1f51f520bc65"
+            alt="SZA"
+          />
+          <div class="overlay"><div class="text">SZA</div></div>
+        </div>
+        <div id="4V8LLVI7PbaPR0K2TGSxFF" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f1788278b782cbb5a3963db88ada"
+            alt="Tyler, The Creator"
+          />
+          <div class="overlay"><div class="text">Tyler, The Creator</div></div>
+        </div>
+        <div id="1U1el3k54VvEUzo3ybLPlM" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f17851dfdac248da65a860963b68"
+            alt="Kali Uchis"
+          />
+          <div class="overlay"><div class="text">Kali Uchis</div></div>
+        </div>
+        <div id="3tlXnStJ1fFhdScmQeLpuG" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f178e187dca750abfd3688836309"
+            alt="Brent Faiyaz"
+          />
+          <div class="overlay"><div class="text">Brent Faiyaz</div></div>
+        </div>
+        <div id="6aaMZ3fcfLv4tEbmY7bjRM" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f1781ff1685224034e6c12538722"
+            alt="Isaiah Rashad"
+          />
+          <div class="overlay"><div class="text">Isaiah Rashad</div></div>
+        </div>
+        <div id="3jK9MiCrA42lLAdMGUZpwa" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f17896287bd47570ff13f0c01496"
+            alt="Anderson .Paak"
+          />
+          <div class="overlay"><div class="text">Anderson .Paak</div></div>
+        </div>
+        <div
+          id="0oK5D6uPhGu4Jk2dbZfodU"
+          class="artistIcon selectedIcon"
+          tabindex="0"
+        >
+          <img
+            src="https://i.scdn.co/image/ab6761610000f1786aaa14ecb5a0a2b76621d4a3"
+            alt="Thee Sacred Souls"
+          />
+          <div class="overlay"><div class="text">Thee Sacred Souls</div></div>
+        </div>
+        <div id="7GlBOeep6PqTfFi59PTUUN" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f178cde5a0d57c1b79de5fce6bee"
+            alt="Chappell Roan"
+          />
+          <div class="overlay"><div class="text">Chappell Roan</div></div>
+        </div>
+        <div id="5IcR3N7QB1j6KBL8eImZ8m" class="artistIcon" tabindex="0">
+          <img
+            src="https://i.scdn.co/image/ab6761610000f178a59f2f483877c8d0142f71f3"
+            alt="ScHoolboy Q"
+          />
+          <div class="overlay"><div class="text">ScHoolboy Q</div></div>
+        </div>
+      </div>
+
+      <div class="submitContainer">
+        <button class="deselect">Deselect</button>
+        <button class="submit">Submit Artists</button>
+      </div>
+    </section>
+    <section class="playlistSection" style="display: flex">
+      <div class="playlistOptions">
+        <!--
+            <div class = "playlistPicture"></div>
+            <h1 class = "playlistName">PLAYLISTIFY MIX</h1>
+            <div class = "renamePlaylist">
+                <button class = "renameButton">RENAME PLAYLIST</button>
+                <button class = "anotherButton">MAKE ANOTHER</button>
+            -->
+      </div>
+
+      <div class="playlistDisplay">
+        <h2>YOUR PLAYLIST</h2>
+        <ul class="list">
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Can I Call You Rose?"
+                src="https://i.scdn.co/image/ab67616d0000b273095cb401528a72f7a2d26c22"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Weak for Your Love</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="The Instrumentals"
+                src="https://i.scdn.co/image/ab67616d0000b273fc370e0139b186aefd9cb88f"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Once You Know (Then You'll Know) - Instrumental</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="The Instrumentals"
+                src="https://i.scdn.co/image/ab67616d0000b273fc370e0139b186aefd9cb88f"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Overflowing - Instrumental</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Running Away"
+                src="https://i.scdn.co/image/ab67616d0000b273dc84c83e71d974c95037ba51"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Running Away</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Can I Call You Rose?"
+                src="https://i.scdn.co/image/ab67616d0000b273095cb401528a72f7a2d26c22"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Can I Call You Rose?</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="The Instrumentals"
+                src="https://i.scdn.co/image/ab67616d0000b273fc370e0139b186aefd9cb88f"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Weak For Your Love - Instrumental</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>For Now</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="The Instrumentals"
+                src="https://i.scdn.co/image/ab67616d0000b273fc370e0139b186aefd9cb88f"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Lady Love - Instrumental</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="The Instrumentals"
+                src="https://i.scdn.co/image/ab67616d0000b273fc370e0139b186aefd9cb88f"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Easier Said Than Done - Instrumental</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Trade of Hearts</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Love Comes Easy</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Future Lover</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Can I Call You Rose?</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Happy and Well</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="The Instrumentals"
+                src="https://i.scdn.co/image/ab67616d0000b273fc370e0139b186aefd9cb88f"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Future Lover - Instrumental</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Easier Said Than Done</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Weak for Your Love</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="The Instrumentals"
+                src="https://i.scdn.co/image/ab67616d0000b273fc370e0139b186aefd9cb88f"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Can I Call You Rose? - Instrumental</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="The Instrumentals"
+                src="https://i.scdn.co/image/ab67616d0000b273fc370e0139b186aefd9cb88f"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Love Comes Easy - Instrumental</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Once You Know (Then You'll Know)</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Rêverie"
+                src="https://i.scdn.co/image/ab67616d0000b273d6556bb7e96ca65493a1df29"
+              />
+            </div>
+            <div class="trackText">
+              <h3>I'll Never Leave</h3>
+              <p>Les Imprimés</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Don't Tell Me"
+                src="https://i.scdn.co/image/ab67616d0000b273e74f9a115b9af096f4d2d0e2"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Don't Tell Me</h3>
+              <p>Joey Quinones</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Back To Black (Deluxe Edition)"
+                src="https://i.scdn.co/image/ab67616d0000b27376ffb5b5ab045d22c81235c1"
+              />
+            </div>
+            <div class="trackText">
+              <h3>He Can Only Hold Her</h3>
+              <p>Amy Winehouse</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="My God Has a Telephone"
+                src="https://i.scdn.co/image/ab67616d0000b273922687b91900440fd1803d39"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Live On</h3>
+              <p>The Flying Stars Of Brooklyn NY, Aaron Frazer</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Nobody's Clown"
+                src="https://i.scdn.co/image/ab67616d0000b27396bba0ff20c56165ae065df4"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Give Me One More Chance</h3>
+              <p>Los Yesterdays</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Take What's Given"
+                src="https://i.scdn.co/image/ab67616d0000b273d29fe04a6c8e0d51f7a8b715"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Take What's Given</h3>
+              <p>BADBADNOTGOOD</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Crying, Laughing, Loving, Lying"
+                src="https://i.scdn.co/image/ab67616d0000b27328637947b8270a3a078cd718"
+              />
+            </div>
+            <div class="trackText">
+              <h3>My Song</h3>
+              <p>Labi Siffre</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Flamingo Serenade"
+                src="https://i.scdn.co/image/ab67616d0000b2731ba2d22b62756c8c2d579c14"
+              />
+            </div>
+            <div class="trackText">
+              <h3>I Only Have Eyes for You</h3>
+              <p>The Flamingos</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Mowing"
+                src="https://i.scdn.co/image/ab67616d0000b273c718e37d06044009f9cfac97"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Love Survive</h3>
+              <p>Michael Nau</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="The Lo-Fis"
+                src="https://i.scdn.co/image/ab67616d0000b273c3545bbe806b845c2b52bc20"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Atomic Vomit</h3>
+              <p>Steve Lacy</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Show Me the Right"
+                src="https://i.scdn.co/image/ab67616d0000b273c2253e5184e5812d83fdd694"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Show Me the Right</h3>
+              <p>NEIL FRANCES</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Tomorrow's Gonna Come"
+                src="https://i.scdn.co/image/ab67616d0000b2730db4f617c93e31f0ab6148ef"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Rome</h3>
+              <p>Dojo Cuts</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Voice Notes"
+                src="https://i.scdn.co/image/ab67616d0000b2730ea4e325f3b90e4731dd1c07"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Bad Company</h3>
+              <p>Yazmin Lacey</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Forever"
+                src="https://i.scdn.co/image/ab67616d0000b2735ac908d1247d38d2dc0aaac0"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Forever - Single Version</h3>
+              <p>The Little Dippers</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Baby You Got It"
+                src="https://i.scdn.co/image/ab67616d0000b273c4a090a948bb507352f6bd74"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Me And You</h3>
+              <p>Brenton Wood</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Untourable Album"
+                src="https://i.scdn.co/image/ab67616d0000b2733779ef0a747d6599acdaeec0"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Sugar</h3>
+              <p>Men I Trust</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls on Audiotree Live"
+                src="https://i.scdn.co/image/ab67616d0000b273e1bb154f2117b534b1c3a565"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Easier Said Than Done - Audiotree Live Version</h3>
+              <p>Thee Sacred Souls, Audiotree</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="A LA SALA"
+                src="https://i.scdn.co/image/ab67616d0000b2733854b553506134a1421ed58c"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Hold Me Up (Thank You)</h3>
+              <p>Khruangbin</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Do you? but it's only the best part"
+                src="https://i.scdn.co/image/ab67616d0000b27328d3f60431192bd9b0b042a2"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Do you? // Tori's Ballad</h3>
+              <p>Marigold</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Getaway"
+                src="https://i.scdn.co/image/ab67616d0000b2731324126728be98a5b4775b4e"
+              />
+            </div>
+            <div class="trackText">
+              <h3>intro</h3>
+              <p>Orion Sun</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Lauren"
+                src="https://i.scdn.co/image/ab67616d0000b2734bf3b48e615335264b9fcb22"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Lauren</h3>
+              <p>Men I Trust</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="On The Lips"
+                src="https://i.scdn.co/image/ab67616d0000b2734f1d26255e068818256c3e4c"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Crushed Velvet</h3>
+              <p>Molly Lewis, Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Shame on the World"
+                src="https://i.scdn.co/image/ab67616d0000b273101135bbe3e1915204205122"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Let Me Prove My Love to You</h3>
+              <p>The Main Ingredient</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="I Want You (Deluxe Edition)"
+                src="https://i.scdn.co/image/ab67616d0000b2736329e23d367245adceb71fd0"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Come Live With Me Angel</h3>
+              <p>Marvin Gaye</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Texas Moon"
+                src="https://i.scdn.co/image/ab67616d0000b27328e12bc569f20d9f8ebff84c"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Mariella</h3>
+              <p>Khruangbin, Leon Bridges</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Apollo XXI"
+                src="https://i.scdn.co/image/ab67616d0000b273962ff78ff496c98e5fed40d8"
+              />
+            </div>
+            <div class="trackText">
+              <h3>N Side</h3>
+              <p>Steve Lacy</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Ring of Past"
+                src="https://i.scdn.co/image/ab67616d0000b27391af13aed43a3e59e05e5fb4"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Ring of Past</h3>
+              <p>Men I Trust</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Band of Thieves"
+                src="https://i.scdn.co/image/ab67616d0000b2734e6fe8619161ed2c5031032d"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Love Me or Leave Me</h3>
+              <p>Band Of Thieves</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Oogum Boogum"
+                src="https://i.scdn.co/image/ab67616d0000b273af82af61a16d677bf22f37a1"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Oogum Boogum Song</h3>
+              <p>Brenton Wood</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Love Comes Easy</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Il Dio sotto la pelle - God Under the Skin (Original Motion Picture Soundtrack)"
+                src="https://i.scdn.co/image/ab67616d0000b273022428a1bd7e689809e1f9a0"
+              />
+            </div>
+            <div class="trackText">
+              <h3>It's Possible</h3>
+              <p>Piero Piccioni, Catherine Howe</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="The Shave Experiment (Director's Cut)"
+                src="https://i.scdn.co/image/ab67616d0000b2739ecba76ea135175ab5114fce"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Take Me Where Your Heart Is</h3>
+              <p>Q</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Volcano"
+                src="https://i.scdn.co/image/ab67616d0000b27377619f14cb03e11baf5761d1"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Back On 74</h3>
+              <p>Jungle</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Here Comes The Cowboy"
+                src="https://i.scdn.co/image/ab67616d0000b273fa1323bb50728c7489980672"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Heart To Heart</h3>
+              <p>Mac DeMarco</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Thee Sacred Souls"
+                src="https://i.scdn.co/image/ab67616d0000b2734bc05e5b1e506a6acea17148"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Lady Love</h3>
+              <p>Thee Sacred Souls</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Because the Internet"
+                src="https://i.scdn.co/image/ab67616d0000b27326d64b6150aa3d9b6b67d857"
+              />
+            </div>
+            <div class="trackText">
+              <h3>III. Urn</h3>
+              <p>Childish Gambino</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Hot Space (2011 Remaster)"
+                src="https://i.scdn.co/image/ab67616d0000b273d254ca497999ae980a5a38c5"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Cool Cat - Remastered 2011</h3>
+              <p>Queen</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Not Your Muse (Deluxe)"
+                src="https://i.scdn.co/image/ab67616d0000b273a724f0a2c23fdc0ef98201b8"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Both Sides Of The Moon</h3>
+              <p>Celeste, Gotts Street Park</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="Quiet Music for Young People"
+                src="https://i.scdn.co/image/ab67616d0000b273d46e60ffb956956c289871dd"
+              />
+            </div>
+            <div class="trackText">
+              <h3>Let's Go to Trader Joe's</h3>
+              <p>Dana and Alden, Cinya Khan</p>
+            </div>
+          </li>
+          <li class="listItem">
+            <div class="trackPhoto">
+              <img
+                alt="deep in it"
+                src="https://i.scdn.co/image/ab67616d0000b273c743cb5d8de54b825b0b3729"
+              />
+            </div>
+            <div class="trackText">
+              <h3>deep in it</h3>
+              <p>berlioz, Ted Jasper</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <script src="/js/app.js"></script>
+  </body>
+</html>
