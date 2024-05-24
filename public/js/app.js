@@ -1,5 +1,8 @@
 //API Controller
 const APIController = (function(){
+    let currentPlaylistID = "";
+
+
     //function for receiving an access token
     const _getAccessToken = async () =>{
         const urlParams = new URLSearchParams(window.location.search);
@@ -105,7 +108,7 @@ const APIController = (function(){
     const _createPlaylist = async (accessToken) => {
         const requestBody = JSON.stringify({
             "name": "PLAYLISTIFY MIX",
-            "description": "A blend of your favorite artists' songs and recommendations",
+            "description": "",
             "public": false
         });
 
@@ -120,6 +123,14 @@ const APIController = (function(){
 
         return data;
     };
+
+    const _setCurrentPlaylistID = async (playlistID) =>{
+        currentPlaylistID = playlistID;
+    }
+
+    const _getCurrentPlaylistID = () =>{
+        return currentPlaylistID;
+    }
 
     const _addTracks = async (accessToken, tracks, playlistID) => {
         const requestBody = JSON.stringify({
@@ -174,6 +185,14 @@ const APIController = (function(){
             return _createPlaylist(accessToken);
         },
 
+        setPlaylistID(playlistID){
+            return _setCurrentPlaylistID(playlistID);
+        },
+
+        getPlaylistID(){
+            return _getCurrentPlaylistID();
+        },
+
         addTracks(accessToken, tracks, playlistID){
             return _addTracks(accessToken, tracks, playlistID);
         }
@@ -192,7 +211,8 @@ const UIController = (function(){
         long_term: '.long_term',
         list: '.list',
         anotherButton : '.anotherButton',
-        renameButton : '.renameButton'
+        renameButton : '.renameButton',
+        openButton: '.openButton'
     }
 
     return {
@@ -206,7 +226,8 @@ const UIController = (function(){
                 deselect : document.querySelector(DOMelements.deselect),
                 list : document.querySelector(DOMelements.list),
                 renameButton : document.querySelector(DOMelements.renameButton),
-                anotherButton : document.querySelector(DOMelements.anotherButton)
+                anotherButton : document.querySelector(DOMelements.anotherButton),
+                openButton : document.querySelector(DOMelements.openButton)
             }
         },
 
@@ -290,8 +311,11 @@ const UIController = (function(){
                 item.classList.remove('selectedIcon');
             }
             this.buttonToggle(document.getElementsByClassName("selectedIcon").length);
-        }
+        },
         
+        isHorizontalScroll(e){
+            return (e.scrollWidth > e.clientWidth);
+        }
     }
     
 })();
@@ -300,6 +324,7 @@ const UIController = (function(){
 const APPController = (function(APICtrl, UICtrl) {
     DOMInputs = UICtrl.inputs();
     let playlistNum = 60;
+    
 
 
     const changeDisplay = async (term) => {
@@ -376,7 +401,7 @@ const APPController = (function(APICtrl, UICtrl) {
 
             //child.classList.add(name.replaceAll(" ", "_"));
             child.classList.add('artistIcon');
-            child.classList.add('artistStack');
+            child.classList.add('stacked');
             
             const image = new Image();
             image.src = artist['images'][2]['url'];
@@ -489,12 +514,15 @@ const APPController = (function(APICtrl, UICtrl) {
             const trackItem = track.track;
             let album = trackItem.album;
             let artists = trackItem.artists;
+            
             let names = artists.map(artist => artist.name);
             names = names.join(', ');
             
             let item = document.createElement("div");
             let text = document.createElement("div");
             let photo = document.createElement("div");
+            
+
             item.classList.add("listItem");
             item.classList.add("stacked");
             photo.classList.add("trackPhoto");
@@ -520,6 +548,37 @@ const APPController = (function(APICtrl, UICtrl) {
         }
     }
 
+    const addScroll = async () =>  {
+        const items = document.querySelectorAll('.trackText');
+
+
+        for(const item of items){
+            const h3 =  item.children[0];
+            const p = item.children[1];
+
+            if(UICtrl.isHorizontalScroll(h3)){
+                if(!h3.classList.contains('h3Scroller')){
+                    h3.classList.add('h3Scroller');
+                }
+            }else {
+                if(h3.classList.contains('h3Scroller')){
+                    h3.classList.remove('h3Scroller');
+                }
+            }
+
+            
+            if(UICtrl.isHorizontalScroll(p)){
+                if(!p.classList.contains('pScroller')){
+                    p.classList.add('pScroller');
+                }
+            }else {
+                if(p.classList.contains('pScroller')){
+                    p.classList.remove('pScroller');
+                }
+            }
+        }
+    }
+
     //creates playlist track display
     const playlistDisplay = async (playlistTracks) => {
         const img_url = playlistTracks["images"][0]["url"];
@@ -538,6 +597,7 @@ const APPController = (function(APICtrl, UICtrl) {
         }
 */
         await displayTracks(playlistTracks);
+
         
         //if user has already made playlist
         const section = document.querySelector('.playlistSection');
@@ -545,8 +605,17 @@ const APPController = (function(APICtrl, UICtrl) {
         if(sectionDisplay.getPropertyValue("display") == 'none'){
             section.style.display = 'flex';
         }
+        await addScroll();
         section.scrollIntoView();
     }
+
+    DOMInputs.openButton.addEventListener('click', async (e) => {
+        const accessToken = localStorage.getItem("accessToken");
+        const playlistID = APICtrl.getPlaylistID();
+        const playlistObj = await APICtrl.getPlaylist(accessToken, playlistID);
+
+        window.open(playlistObj.external_urls.spotify, "_blank");
+    });
 
     //deselect listener
     DOMInputs.deselect.addEventListener('click', async (e) => {
@@ -602,6 +671,7 @@ const APPController = (function(APICtrl, UICtrl) {
 
         const playlistData = await APICtrl.createPlaylist(accessToken);
         const playlistID = playlistData['id'];
+        APICtrl.setPlaylistID(playlistID);
         const uris = playlistTracks.map(str => "spotify:track:" + str);
 
         const generatedPlaylist = await APICtrl.addTracks(accessToken, uris, playlistID);
@@ -610,12 +680,12 @@ const APPController = (function(APICtrl, UICtrl) {
         await playlistDisplay(playlistObj);
         
     });
-/*
+
     DOMInputs.anotherButton.addEventListener('click', async(e) => {
         const section = document.querySelector('.artistSelection');
         section.scrollIntoView();
     });
-*/
+
     DOMInputs.short_term.addEventListener('click', async(e) => {
         UICtrl.deselect();
         changeDisplay('short_term');
@@ -644,6 +714,7 @@ const APPController = (function(APICtrl, UICtrl) {
         UICtrl.setClasses(el);
     });
 
+    window.addEventListener("resize", addScroll);
     UICtrl.setClasses(DOMInputs.list);
 
     return {
