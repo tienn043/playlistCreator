@@ -175,22 +175,28 @@ const APIController = (function () {
     return data;
   };
 
-  const _uploadCover = (accessToken, playlistID, image) => {
-    console.log(typeof(image));
-    const response = fetch(
-      `https://api.spotify.com/v1/playlists/${playlistID}/images`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "image/jpeg",
-        },
-        body: image,
+  const _uploadCover = async (accessToken, playlistID, image) => {
+    try {
+      const response = await fetch(
+        `https://api.spotify.com/v1/playlists/${playlistID}/images`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "image/jpeg",
+          },
+          body: image,
+        }
+      );
+      if(!response.ok){
+        console.error(response.status);
       }
-    );
 
-    const data = response;
-    return data;
+      const data = await response.json();
+      return data;
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
   };
   //const _uploadImage = async (accessToken, image)
 
@@ -370,12 +376,13 @@ const APPController = (function (APICtrl, UICtrl) {
   let playlistNum = 60;
 
   const changeDisplay = async (term) => {
+    const artistLimit = 30;
     const accessToken = localStorage.getItem("accessToken");
-    const topArtists = await APICtrl.getTopArtists(accessToken, term, 20);
+    const topArtists = await APICtrl.getTopArtists(accessToken, term, artistLimit);
     const display = DOMInputs.artistDisplay;
     let icons = document.querySelectorAll(".artistIcon");
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < artistLimit; i++) {
       if (icons[i] && !topArtists[i]) {
         icons[i].remove();
       } else if (!icons[i] && topArtists[i]) {
@@ -428,20 +435,19 @@ const APPController = (function (APICtrl, UICtrl) {
     return base64String;
   };
 
-
   const pickImage = async () => {
-    const response = await fetch("/images");
-    const imageFiles = response;
+    const response = await fetch("/images/base64");
+    const imageFiles = await response.json();
     const randomNum = Math.floor(Math.random() * 10);
 
-    //const photo = imageFiles[randomNum];
-    console.log(imageFiles);
-    //return photo;
+    const photo = imageFiles[randomNum];
+    return photo;
   };
 
   //loads artist display on page load
   const loadArtists = async () => {
     //creating display container and topArtists object
+    const artistLimit = 30;
     const accessToken = await APICtrl.getAccessToken();
     localStorage.clear();
     localStorage.setItem("accessToken", accessToken);
@@ -449,7 +455,7 @@ const APPController = (function (APICtrl, UICtrl) {
     const topArtists = await APICtrl.getTopArtists(
       accessToken,
       "short_term",
-      20
+      artistLimit
     );
 
     //looping to create elements containing the artists image
@@ -763,7 +769,7 @@ const APPController = (function (APICtrl, UICtrl) {
 
     await playlistDisplay(playlistObj);
 
-    //APICtrl.uploadCover(accessToken, playlistID,image);
+    await APICtrl.uploadCover(accessToken, playlistID, image);
   });
 
   DOMInputs.anotherButton.addEventListener("click", async (e) => {

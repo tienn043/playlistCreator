@@ -40,7 +40,7 @@ app.get('/playlist-creator.html', (req, res) => {
 // Serve static files from the "images" directory
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.get('/images', (req, res) => {
+app.get('/images/base64', (req, res) => {
     const coversDir = path.join(__dirname, 'images', 'covers');
     
     fs.readdir(coversDir, (err, files) => {
