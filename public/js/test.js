@@ -27,7 +27,7 @@ const handleLogin = async () => {
     const codeChallenge = base64encode(hashed);
 
 
-    const scope = 'user-top-read user-read-private user-read-email playlist-read-private playlist-modify-private';
+    const scope = 'user-top-read user-read-private user-read-email playlist-read-private playlist-modify-private playlist-modify-public ugc-image-upload';
     const authUrl = new URL("https://accounts.spotify.com/authorize")
 
     // generated in the previous step

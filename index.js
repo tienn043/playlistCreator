@@ -3,8 +3,7 @@ const querystring = require('querystring');
 const request = require('request');
 const port= 3000;
 const path = require('path');
-const {readFile} = require('fs');
-
+const fs = require('fs');
 var app = express();
 
 
@@ -16,7 +15,7 @@ app.use('/js', express.static(path.join(__dirname, 'public/js')));
 //app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-  readFile('./index.html', 'utf8', (err,html) => {
+  fs.readFile('./index.html', 'utf8', (err,html) => {
       if(err){
           res.status(500).send('ERROR');
       }
@@ -28,7 +27,7 @@ app.get('/', (req, res) => {
 );
 
 app.get('/playlist-creator.html', (req, res) => {
-  readFile('./playlist-creator.html', 'utf8', (err,html) => {
+  fs.readFile('./playlist-creator.html', 'utf8', (err,html) => {
       if(err){
           res.status(500).send('ERROR');
       }
@@ -37,6 +36,36 @@ app.get('/playlist-creator.html', (req, res) => {
   }
 
 );
+
+// Serve static files from the "images" directory
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+app.get('/images', (req, res) => {
+    const coversDir = path.join(__dirname, 'images', 'covers');
+    
+    fs.readdir(coversDir, (err, files) => {
+        if (err) {
+            return res.status(500).json({ error: 'Unable to scan directory' });
+        }
+
+        const imageFiles = files.filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
+
+        let arr = [];
+        for(image of imageFiles){
+          const imagePath = path.join(coversDir, image);
+          
+          const data = fs.readFileSync(imagePath);
+
+          const base64String = Buffer.from(data).toString('base64');
+
+          arr.push(base64String);
+        }
+
+        res.json(arr);
+
+    });
+});
+
 
 app.get('/refresh_token', function(req, res) {
 
