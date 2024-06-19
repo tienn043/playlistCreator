@@ -231,7 +231,13 @@ body{
 
   .listItem{
     aspect-ratio: 1 / 1.5; 
-    
+    display: block;
+    text-decoration: none;
+  }
+
+  .listItem:hover{
+    text-decoration: underline;
+    text-decoration-color: var(--button-color) ;
   }
 
   /*

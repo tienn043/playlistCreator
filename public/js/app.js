@@ -4,8 +4,11 @@ const APIController = (function () {
 
   //function for receiving an access token
   const _getAccessToken = async () => {
+    //takes in string the occurs after ? in url
     const urlParams = new URLSearchParams(window.location.search);
     let code = urlParams.get("code");
+
+    //defines parts of api request
     const url = "https://accounts.spotify.com/api/token";
     const clientId = "350bb843292c48ae8ecece947c2ed01d";
     const redirectUri = "http://localhost:3000/playlist-creator.html";
@@ -43,7 +46,7 @@ const APIController = (function () {
     );
 
     const data = await result.json();
-    console.log(data);
+
     return data.items;
   };
 
@@ -144,14 +147,17 @@ const APIController = (function () {
     return data;
   };
 
+  //sets playlistid variable
   const _setCurrentPlaylistID = async (playlistID) => {
     currentPlaylistID = playlistID;
   };
 
+  //returns playlist id
   const _getCurrentPlaylistID = () => {
     return currentPlaylistID;
   };
 
+  //adds tracks to playlist with given id
   const _addTracks = async (accessToken, tracks, playlistID) => {
     const requestBody = JSON.stringify({
       uris: tracks,
@@ -175,6 +181,7 @@ const APIController = (function () {
     return data;
   };
 
+  //uploads album cover to playist with given playlist id
   const _uploadCover = async (accessToken, playlistID, image) => {
     try {
       const response = await fetch(
@@ -188,18 +195,19 @@ const APIController = (function () {
           body: image,
         }
       );
-      if(!response.ok){
+      if (!response.ok) {
         console.error(response.status);
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-        console.error('Fetch error:', error);
+      console.error("Fetch error:", error);
     }
   };
   //const _uploadImage = async (accessToken, image)
 
+  //returns fucntion to be accessed by main
   return {
     getAccessToken() {
       return _getAccessToken();
@@ -301,6 +309,7 @@ const UIController = (function () {
       e.classList.toggle("is-top-overflowing", !isScrolledToTop);
     },
 
+    //toggles whether or not an element is selected, will display an overlay if selected
     toggleSelection(e) {
       if (e.target !== e.currentTarget) {
         let artistAmount =
@@ -311,6 +320,7 @@ const UIController = (function () {
           parent = parent.parentNode;
         }
 
+        //will disable selection if the artist selected amount reaches its cap
         if (artistAmount >= 5 && !parent.classList.contains("selectedIcon")) {
           console.log("limit reached");
         } else {
@@ -322,6 +332,7 @@ const UIController = (function () {
       }
     },
 
+    //selection cap for tabbed selection
     toggleTabbedSelection(e) {
       if (e.target !== e.currentTarget) {
         let artistAmount =
@@ -338,6 +349,7 @@ const UIController = (function () {
       }
     },
 
+    //toggles submit and deselect buttons
     buttonToggle(amount) {
       if (amount > 0) {
         this.inputs().submit.disabled = false;
@@ -348,6 +360,7 @@ const UIController = (function () {
       }
     },
 
+    //passes in submitted artist ids
     submit(e) {
       const artistArray = [];
       const selectedArtists = document.querySelectorAll(".selectedIcon");
@@ -356,6 +369,7 @@ const UIController = (function () {
       return artistArray;
     },
 
+    //deselects selected artists
     deselect() {
       const items = document.querySelectorAll(".selectedIcon");
       for (const item of items) {
@@ -375,12 +389,19 @@ const APPController = (function (APICtrl, UICtrl) {
   DOMInputs = UICtrl.inputs();
   let playlistNum = 60;
 
+
+  //changes artist display based off which time range is selected
   const changeDisplay = async (term) => {
     const artistLimit = 30;
     const accessToken = localStorage.getItem("accessToken");
-    const topArtists = await APICtrl.getTopArtists(accessToken, term, artistLimit);
+    const topArtists = await APICtrl.getTopArtists(
+      accessToken,
+      term,
+      artistLimit
+    );
     const display = DOMInputs.artistDisplay;
     let icons = document.querySelectorAll(".artistIcon");
+
 
     for (let i = 0; i < artistLimit; i++) {
       if (icons[i] && !topArtists[i]) {
@@ -422,6 +443,7 @@ const APPController = (function (APICtrl, UICtrl) {
     }
   };
 
+  //converts image file to base64 for api request
   const convertToB64 = async (file) => {
     let reader = new FileReader();
     let base64String = "";
@@ -435,6 +457,7 @@ const APPController = (function (APICtrl, UICtrl) {
     return base64String;
   };
 
+  //slects random playlist cover
   const pickImage = async () => {
     const response = await fetch("/images/base64");
     const imageFiles = await response.json();
@@ -587,6 +610,7 @@ const APPController = (function (APICtrl, UICtrl) {
     return randomTracks;
   };
 
+  //displays playlist tracks
   const displayTracks = async (playlistTracks) => {
     const items = document.querySelectorAll(".listItem");
     if (items) {
@@ -599,15 +623,19 @@ const APPController = (function (APICtrl, UICtrl) {
     const tracks = playlistTracks["tracks"]["items"];
     for (const track of tracks) {
       const trackItem = track.track;
+      const trackUrl = trackItem.external_urls.spotify;
       let album = trackItem.album;
       let artists = trackItem.artists;
 
       let names = artists.map((artist) => artist.name);
       names = names.join(", ");
 
-      let item = document.createElement("div");
+      let item = document.createElement("a");
       let text = document.createElement("div");
       let photo = document.createElement("div");
+
+      item.setAttribute("href", trackUrl);
+      item.setAttribute("target", "_blank");
 
       item.classList.add("listItem");
       item.classList.add("stacked");
@@ -633,6 +661,7 @@ const APPController = (function (APICtrl, UICtrl) {
     }
   };
 
+  //adds scroll action when element is hovered
   const addScroll = async () => {
     const items = document.querySelectorAll(".trackText");
 
@@ -690,6 +719,7 @@ const APPController = (function (APICtrl, UICtrl) {
     await addScroll();
     section.scrollIntoView();
   };
+
 
   DOMInputs.openButton.addEventListener("click", async (e) => {
     const accessToken = localStorage.getItem("accessToken");
@@ -772,11 +802,15 @@ const APPController = (function (APICtrl, UICtrl) {
     await APICtrl.uploadCover(accessToken, playlistID, image);
   });
 
+
   DOMInputs.anotherButton.addEventListener("click", async (e) => {
     const section = document.querySelector(".artistSelection");
+    UICtrl.deselect();
     section.scrollIntoView();
   });
 
+
+  //time range buttons
   DOMInputs.short_term.addEventListener("click", async (e) => {
     UICtrl.deselect();
     changeDisplay("short_term");
@@ -799,6 +833,7 @@ const APPController = (function (APICtrl, UICtrl) {
     DOMInputs.long_term.disabled = true;
   });
 
+  
   DOMInputs.list.addEventListener("scroll", async (e) => {
     const el = e.currentTarget;
     UICtrl.setClasses(el);
