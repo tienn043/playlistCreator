@@ -290,6 +290,23 @@ const UIController = (function () {
       };
     },
 
+    createObserver() {
+      let newObserver = new IntersectionObserver(
+        function (entries) {
+          if (entries[0].intersectionRatio === 0)
+            document
+              .querySelector("#playlistHeading")
+              .classList.add(".sticky-header");
+          else if (entries[0].intersectionRatio === 1)
+            document
+              .querySelector("#playlistHeading")
+              .classList.remove(".sticky-header");
+        },
+        { threshold: 0.5 }
+      );
+      newObserver.observe(document.querySelector("#playlistHeading"));
+    },
+
     setClasses(e) {
       const isScrollable = e.scrollHeight > e.clientHeight;
 
@@ -389,7 +406,6 @@ const APPController = (function (APICtrl, UICtrl) {
   DOMInputs = UICtrl.inputs();
   let playlistNum = 60;
 
-
   //changes artist display based off which time range is selected
   const changeDisplay = async (term) => {
     const artistLimit = 30;
@@ -401,7 +417,6 @@ const APPController = (function (APICtrl, UICtrl) {
     );
     const display = DOMInputs.artistDisplay;
     let icons = document.querySelectorAll(".artistIcon");
-
 
     for (let i = 0; i < artistLimit; i++) {
       if (icons[i] && !topArtists[i]) {
@@ -716,10 +731,11 @@ const APPController = (function (APICtrl, UICtrl) {
     if (sectionDisplay.getPropertyValue("display") == "none") {
       section.style.display = "flex";
     }
+    
     await addScroll();
     section.scrollIntoView();
+    UICtrl.createObserver();
   };
-
 
   DOMInputs.openButton.addEventListener("click", async (e) => {
     const accessToken = localStorage.getItem("accessToken");
@@ -802,13 +818,11 @@ const APPController = (function (APICtrl, UICtrl) {
     await APICtrl.uploadCover(accessToken, playlistID, image);
   });
 
-
   DOMInputs.anotherButton.addEventListener("click", async (e) => {
     const section = document.querySelector(".artistSelection");
     UICtrl.deselect();
     section.scrollIntoView();
   });
-
 
   //time range buttons
   DOMInputs.short_term.addEventListener("click", async (e) => {
@@ -833,7 +847,6 @@ const APPController = (function (APICtrl, UICtrl) {
     DOMInputs.long_term.disabled = true;
   });
 
-  
   DOMInputs.list.addEventListener("scroll", async (e) => {
     const el = e.currentTarget;
     UICtrl.setClasses(el);

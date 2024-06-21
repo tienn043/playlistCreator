@@ -153,12 +153,12 @@ body{
 }
 
 
-.playlistHeading h2{
+#playlistHeading h2{
     margin: 1rem;
     font-size: clamp(1rem, -0.6312rem + 7.2500vw, 3.9rem);
 }
 
-.playlistHeading{
+#playlistHeading{
     align-self: self-start;
     background-color: var(--bg-color);
     position: sticky;
@@ -172,7 +172,7 @@ body{
     width: 100%;
 }
 
-.playlistHeading::after {
+#playlistHeading::after {
     content: "";
     position: absolute;
     bottom: -10px; /* Adjust this value to place the rectangle exactly where you want it */
